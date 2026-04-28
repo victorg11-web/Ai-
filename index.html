@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Global Chat</title>
+<title>Global Chat + Profiles</title>
 
 <style>
 body {
   margin:0;
   font-family: system-ui;
-  background:#0f172a;
+  background:#0b1220;
   color:white;
 }
 
@@ -20,22 +20,22 @@ body {
   display:flex;
   justify-content:center;
   align-items:center;
-  background:#0b1220;
+  background:#0f172a;
 }
 
 .box {
   background:#111827;
   padding:20px;
   border-radius:12px;
-  width:300px;
+  width:320px;
 }
 
 input {
   width:100%;
   padding:10px;
   margin:6px 0;
-  border:none;
   border-radius:8px;
+  border:none;
 }
 
 button {
@@ -57,30 +57,88 @@ header {
   justify-content:space-between;
   padding:12px;
   background:#111827;
-}
-
-.container {
-  padding:15px;
+  align-items:center;
 }
 
 /* CHAT */
 #chatBox {
-  height:400px;
+  height:420px;
   overflow-y:auto;
   background:#1f2937;
   padding:10px;
   border-radius:12px;
-  margin-bottom:10px;
 }
 
 .msg {
-  padding:6px;
-  margin:4px 0;
+  display:flex;
+  gap:10px;
+  padding:8px;
+  margin:6px 0;
   background:#111827;
-  border-radius:8px;
+  border-radius:10px;
 }
 
-small { color:#9ca3af; }
+.avatar {
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:#2563eb;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:18px;
+}
+
+.meta {
+  font-size:12px;
+  color:#9ca3af;
+}
+
+.onlineDot {
+  width:10px;
+  height:10px;
+  background:lime;
+  border-radius:50%;
+  display:inline-block;
+  margin-left:6px;
+}
+
+/* INPUT */
+#msgInput {
+  width:80%;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+}
+
+.sendBtn {
+  width:18%;
+}
+
+/* PROFILE BOX */
+.profileSetup {
+  position:fixed;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,0.8);
+}
+
+.profileCard {
+  background:#111827;
+  padding:20px;
+  border-radius:12px;
+  width:300px;
+}
+
+.tag {
+  font-size:11px;
+  padding:2px 6px;
+  border-radius:6px;
+  background:#4f46e5;
+  margin-left:6px;
+}
 
 </style>
 </head>
@@ -90,13 +148,25 @@ small { color:#9ca3af; }
 <!-- LOGIN -->
 <div id="login">
   <div class="box">
-    <h3>Global Chat Login</h3>
+    <h3>Login</h3>
 
     <input id="email" placeholder="Email">
     <input id="password" type="password" placeholder="Password">
 
     <button class="primary" onclick="login()">Login</button>
     <button onclick="signup()">Signup</button>
+  </div>
+</div>
+
+<!-- PROFILE SETUP -->
+<div class="profileSetup" id="profileSetup">
+  <div class="profileCard">
+    <h3>Opret profil</h3>
+
+    <input id="username" placeholder="Username">
+    <input id="avatar" placeholder="Avatar emoji (fx 😎)">
+    
+    <button class="primary" onclick="saveProfile()">Gem profil</button>
   </div>
 </div>
 
@@ -108,15 +178,16 @@ small { color:#9ca3af; }
   <button onclick="logout()">Logout</button>
 </header>
 
-<div class="container">
+<div style="padding:15px">
 
-  <div id="chatBox"></div>
+<div id="chatBox"></div>
 
-  <input id="msgInput" placeholder="Skriv besked...">
-  <button onclick="sendMsg()" class="primary">Send</button>
+<br>
+
+<input id="msgInput" placeholder="Skriv besked...">
+<button class="primary sendBtn" onclick="sendMsg()">Send</button>
 
 </div>
-
 </div>
 
 <script type="module">
@@ -134,9 +205,12 @@ import {
   getFirestore,
   collection,
   addDoc,
+  doc,
+  setDoc,
+  getDoc,
   onSnapshot,
-  orderBy,
   query,
+  orderBy,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -164,35 +238,61 @@ window.login = () => {
 
 window.logout = () => signOut(auth);
 
-/* CHAT SEND */
+/* PROFILE SAVE */
+window.saveProfile = async function(){
+  let user = auth.currentUser;
+
+  await setDoc(doc(db,"profiles",user.uid), {
+    username: username.value,
+    avatar: avatar.value || "🙂",
+    tag: "user",
+    online: true
+  });
+
+  profileSetup.style.display="none";
+};
+
+/* SEND MESSAGE */
 window.sendMsg = async function(){
   let user = auth.currentUser;
   if(!user) return;
+
+  let prof = await getDoc(doc(db,"profiles",user.uid));
 
   if(!msgInput.value) return;
 
   await addDoc(collection(db,"messages"), {
     text: msgInput.value,
-    user: user.email,
+    uid: user.uid,
+    username: prof.data().username,
+    avatar: prof.data().avatar,
+    tag: prof.data().tag,
     time: serverTimestamp()
   });
 
-  msgInput.value = "";
+  msgInput.value="";
 };
 
 /* REALTIME CHAT */
 const q = query(collection(db,"messages"), orderBy("time"));
 
-onSnapshot(q, (snap)=>{
-  chatBox.innerHTML = "";
+onSnapshot(q, snap=>{
+  chatBox.innerHTML="";
 
-  snap.forEach(doc=>{
-    let d = doc.data();
+  snap.forEach(d=>{
+    let m = d.data();
 
     chatBox.innerHTML += `
       <div class="msg">
-        <b>${d.user}</b><br>
-        ${d.text}
+        <div class="avatar">${m.avatar}</div>
+
+        <div>
+          <b>${m.username}
+            <span class="tag">${m.tag}</span>
+            <span class="onlineDot"></span>
+          </b>
+          <div>${m.text}</div>
+        </div>
       </div>
     `;
   });
@@ -200,11 +300,18 @@ onSnapshot(q, (snap)=>{
   chatBox.scrollTop = chatBox.scrollHeight;
 });
 
-/* LOGIN STATE */
-onAuthStateChanged(auth, user => {
+/* AUTH STATE */
+onAuthStateChanged(auth, async user => {
   if(user){
     login.style.display="none";
     app.style.display="block";
+
+    let profRef = doc(db,"profiles",user.uid);
+    let profSnap = await getDoc(profRef);
+
+    if(!profSnap.exists()){
+      profileSetup.style.display="flex";
+    }
   } else {
     login.style.display="flex";
     app.style.display="none";
