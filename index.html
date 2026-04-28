@@ -1,76 +1,72 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-<meta charset="UTF-8">
-<title>AI Chat</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cyber Arcade Hub</title>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  color:white;
+body {
+  margin: 0;
+  font-family: monospace;
+  color: #00ffcc;
+  background: black;
+  overflow-x: hidden;
 }
 
-.chat{
-  width:420px;
-  height:650px;
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(20px);
-  border-radius:20px;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
+/* MATRIX CANVAS */
+#matrix {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
 }
 
-.header{
-  padding:15px;
-  text-align:center;
-  font-weight:bold;
-  background:rgba(255,255,255,0.05);
+/* HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #00ffcc;
+  background: rgba(0,0,0,0.7);
 }
 
-.messages{
-  flex:1;
-  padding:10px;
-  overflow-y:auto;
+nav button {
+  margin: 3px;
+  background: transparent;
+  border: 1px solid #00ffcc;
+  color: #00ffcc;
+  padding: 6px 10px;
+  cursor: pointer;
 }
 
-.msg{
-  margin:8px;
-  padding:10px;
-  border-radius:15px;
-  max-width:80%;
+nav button:hover {
+  background: #00ffcc;
+  color: black;
 }
 
-.user{background:#4f7cff;margin-left:auto;}
-.ai{background:rgba(255,255,255,0.15);}
+/* SECTIONS */
+section { display:none; padding:20px; }
+.active { display:block; }
 
-.inputBox{
-  display:flex;
-  padding:10px;
-  gap:5px;
-  background:rgba(255,255,255,0.05);
+/* CHAT */
+#chatBox {
+  border: 1px solid #00ffcc;
+  height: 200px;
+  overflow-y: auto;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
-input{
-  flex:1;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  outline:none;
+/* CANVAS */
+canvas.game {
+  border: 2px solid #00ffcc;
+  display:block;
+  margin:10px auto;
 }
 
-button{
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#4f7cff;
-  color:white;
+/* BUTTONS */
+button {
   cursor:pointer;
 }
 </style>
@@ -78,72 +74,226 @@ button{
 
 <body>
 
-<div class="chat">
+<canvas id="matrix"></canvas>
 
-  <div class="header">🤖 Mini ChatGPT</div>
+<header>
+  <h2>⚡ CYBER ARCADE</h2>
+  <nav>
+    <button onclick="show('home')">Home</button>
+    <button onclick="show('snake')">Snake</button>
+    <button onclick="show('pong')">Pong</button>
+    <button onclick="show('chat')">AI</button>
+    <button onclick="toggleMusic()">🎵</button>
+  </nav>
+</header>
 
-  <div id="messages" class="messages"></div>
+<!-- HOME -->
+<section id="home" class="active">
+  <h2>🏠 Dashboard</h2>
+  <p>Velkommen til Cyber Arcade Hub</p>
 
-  <div class="inputBox">
-    <input id="input" placeholder="Skriv noget..." />
-    <button onclick="send()">Send</button>
-  </div>
+  <h3>🏆 Achievements</h3>
+  <div id="achievements"></div>
+</section>
 
-</div>
+<!-- SNAKE -->
+<section id="snake">
+  <h2>🐍 Snake</h2>
+  <canvas id="snakeCanvas" width="300" height="300" class="game"></canvas>
+</section>
+
+<!-- PONG -->
+<section id="pong">
+  <h2>🏓 Pong</h2>
+  <canvas id="pongCanvas" width="300" height="300" class="game"></canvas>
+</section>
+
+<!-- CHAT BOT -->
+<section id="chat">
+  <h2>🧠 Cyber AI</h2>
+  <div id="chatBox"></div>
+  <input id="input" placeholder="skriv noget..." />
+  <button onclick="sendMsg()">Send</button>
+</section>
 
 <script>
 
-const API_KEY = "DIN_API_KEY_HER"; // 🔑 indsæt din key her
+/* ================= MATRIX BACKGROUND ================= */
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
 
-function add(text,type){
-  const div=document.createElement("div");
-  div.className="msg "+type;
-  div.innerText=text;
-  document.getElementById("messages").appendChild(div);
-  document.getElementById("messages").scrollTop=9999;
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+
+let letters = "01CYBERHACKER0101".split("");
+let fontSize = 14;
+let columns = canvas.width / fontSize;
+
+let drops = Array(Math.floor(columns)).fill(1);
+
+function drawMatrix() {
+  ctx.fillStyle = "rgba(0,0,0,0.05)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.fillStyle = "#00ffcc";
+  ctx.font = fontSize + "px monospace";
+
+  drops.forEach((y, i) => {
+    let text = letters[Math.floor(Math.random()*letters.length)];
+    ctx.fillText(text, i*fontSize, y*fontSize);
+
+    if (y*fontSize > canvas.height && Math.random() > 0.975) {
+      drops[i] = 0;
+    }
+
+    drops[i]++;
+  });
+}
+setInterval(drawMatrix, 40);
+
+/* ================= NAV ================= */
+function show(id) {
+  document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
-async function send(){
-  const input=document.getElementById("input").value;
-  if(!input)return;
+/* ================= SOUND SYSTEM ================= */
+let musicOn = false;
+let audioCtx;
 
-  add(input,"user");
-  document.getElementById("input").value="";
+function toggleMusic() {
+  if (!audioCtx) audioCtx = new AudioContext();
+  musicOn = !musicOn;
+}
 
-  add("Tænker...","ai");
+function beep(freq=400) {
+  if (!audioCtx || !musicOn) return;
 
-  try{
-    const res=await fetch("https://api.openai.com/v1/chat/completions",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "Authorization":"Bearer "+API_KEY
-      },
-      body:JSON.stringify({
-        model:"gpt-4o-mini",
-        messages:[
-          {role:"system",content:"Du er en hjælpsom dansk AI."},
-          {role:"user",content:input}
-        ]
-      })
-    });
+  let o = audioCtx.createOscillator();
+  let g = audioCtx.createGain();
 
-    const data=await res.json();
+  o.type = "square";
+  o.frequency.value = freq;
 
-    document.getElementById("messages").removeChild(
-      document.getElementById("messages").lastChild
-    );
+  g.gain.value = 0.05;
 
-    const reply =
-      data?.choices?.[0]?.message?.content ||
-      "Fejl: ingen svar";
+  o.connect(g);
+  g.connect(audioCtx.destination);
 
-    add(reply,"ai");
+  o.start();
+  o.stop(audioCtx.currentTime + 0.1);
+}
 
-  }catch(e){
-    add("Fejl i forbindelse til AI","ai");
+/* ================= ACHIEVEMENTS ================= */
+let achievements = JSON.parse(localStorage.getItem("ach")) || [];
+
+function addAch(text) {
+  if (!achievements.includes(text)) {
+    achievements.push(text);
+    localStorage.setItem("ach", JSON.stringify(achievements));
+    renderAch();
   }
 }
+
+function renderAch() {
+  document.getElementById("achievements").innerHTML =
+    achievements.map(a => "🏆 " + a).join("<br>");
+}
+renderAch();
+
+/* ================= CHAT BOT ================= */
+function sendMsg() {
+  let input = document.getElementById("input");
+  let box = document.getElementById("chatBox");
+
+  let msg = input.value;
+  box.innerHTML += "<div>You: " + msg + "</div>";
+
+  let reply = "Jeg forstår ikke helt 🤖";
+  if (msg.includes("hej")) reply = "Hej hacker 😎";
+  if (msg.includes("snake")) reply = "Snake er i menuen 🐍";
+  if (msg.includes("pong")) reply = "Ping pong mode aktiveret 🏓";
+
+  box.innerHTML += "<div>AI: " + reply + "</div>";
+  input.value = "";
+
+  beep(600);
+}
+
+/* ================= SNAKE ================= */
+const s = document.getElementById("snakeCanvas");
+const sctx = s.getContext("2d");
+
+let snake = [{x:150,y:150}];
+let dx = 10, dy = 0;
+let food = {x:50,y:50};
+
+function snakeGame() {
+  requestAnimationFrame(snakeGame);
+
+  sctx.fillStyle="black";
+  sctx.fillRect(0,0,300,300);
+
+  let head = {x:snake[0].x+dx, y:snake[0].y+dy};
+
+  snake.unshift(head);
+
+  if (head.x===food.x && head.y===food.y) {
+    food.x=Math.random()*280|0;
+    food.y=Math.random()*280|0;
+    addAch("Spiste food i Snake");
+    beep(800);
+  } else snake.pop();
+
+  sctx.fillStyle="#00ffcc";
+  snake.forEach(p=>sctx.fillRect(p.x,p.y,10,10));
+
+  sctx.fillStyle="#ff00ff";
+  sctx.fillRect(food.x,food.y,10,10);
+}
+snakeGame();
+
+document.addEventListener("keydown",e=>{
+  if(e.key=="ArrowUp") {dx=0;dy=-10;}
+  if(e.key=="ArrowDown") {dx=0;dy=10;}
+  if(e.key=="ArrowLeft") {dx=-10;dy=0;}
+  if(e.key=="ArrowRight") {dx=10;dy=0;}
+});
+
+/* ================= PONG ================= */
+const p = document.getElementById("pongCanvas");
+const pctx = p.getContext("2d");
+
+let ball = {x:150,y:150,dx:3,dy:3};
+let paddle = 120;
+
+function pong() {
+  requestAnimationFrame(pong);
+
+  pctx.fillStyle="black";
+  pctx.fillRect(0,0,300,300);
+
+  ball.x+=ball.dx;
+  ball.y+=ball.dy;
+
+  if(ball.x<0||ball.x>300) ball.dx*=-1;
+  if(ball.y<0) ball.dy*=-1;
+
+  if(ball.y>280 && ball.x>paddle && ball.x<paddle+60) {
+    ball.dy*=-1;
+    beep(300);
+  }
+
+  pctx.fillStyle="#00ffcc";
+  pctx.fillRect(paddle,290,60,10);
+
+  pctx.fillRect(ball.x,ball.y,10,10);
+}
+pong();
+
+document.addEventListener("mousemove",e=>{
+  paddle = e.clientX;
+});
 
 </script>
 
