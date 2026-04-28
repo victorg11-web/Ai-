@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Chat</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .chat-container {
+      width: 400px;
+      background: #1e293b;
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    .messages {
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+
+    .message {
+      margin: 5px 0;
+    }
+
+    .user {
+      text-align: right;
+      color: #38bdf8;
+    }
+
+    .ai {
+      text-align: left;
+      color: #a78bfa;
+    }
+
+    input {
+      width: 75%;
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    button {
+      width: 20%;
+      padding: 8px;
+      background: #38bdf8;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-container">
+  <div class="messages" id="messages"></div>
+
+  <input type="text" id="input" placeholder="Skriv til AI..." />
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+function addMessage(text, sender) {
+  const msg = document.createElement("div");
+  msg.classList.add("message", sender);
+  msg.innerText = text;
+  document.getElementById("messages").appendChild(msg);
+}
+
+function fakeAIResponse(input) {
+  return "AI svar: " + input.split("").reverse().join("");
+}
+
+function sendMessage() {
+  const input = document.getElementById("input");
+  const text = input.value;
+
+  if (!text) return;
+
+  addMessage(text, "user");
+
+  setTimeout(() => {
+    const reply = fakeAIResponse(text);
+    addMessage(reply, "ai");
+  }, 500);
+
+  input.value = "";
+}
+</script>
+
+</body>
+</html>
