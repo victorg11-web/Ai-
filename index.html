@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profile System (Offline)</title>
+<title>Profile App FIX</title>
 
 <style>
 body{
@@ -13,24 +13,13 @@ body{
   color:white;
 }
 
-/* TOP BAR */
 header{
   display:flex;
   justify-content:space-between;
   padding:12px;
   background:#111827;
-  position:sticky;
-  top:0;
 }
 
-.badge{
-  background:#4f46e5;
-  padding:3px 8px;
-  border-radius:6px;
-  font-size:12px;
-}
-
-/* LAYOUT */
 .container{padding:20px;}
 
 .card{
@@ -40,7 +29,7 @@ header{
   margin-bottom:10px;
 }
 
-input,select{
+input{
   width:100%;
   padding:10px;
   margin:6px 0;
@@ -58,8 +47,14 @@ button{
 
 .primary{background:#2563eb;color:white;}
 
-/* PROFILE */
-.profile{display:none;}
+.hidden{display:none;}
+
+.tag{
+  background:#4f46e5;
+  padding:2px 6px;
+  border-radius:6px;
+  font-size:11px;
+}
 
 .levelBar{
   height:10px;
@@ -73,31 +68,6 @@ button{
   background:#22c55e;
   width:0%;
 }
-
-/* CHAT */
-#chatBox{
-  height:250px;
-  overflow:auto;
-  background:#1f2937;
-  padding:10px;
-  border-radius:10px;
-}
-
-.msg{
-  padding:6px;
-  margin:5px 0;
-  background:#111827;
-  border-radius:8px;
-}
-
-.tag{
-  font-size:11px;
-  background:#4f46e5;
-  padding:2px 6px;
-  border-radius:6px;
-  margin-left:5px;
-}
-
 </style>
 </head>
 
@@ -107,26 +77,26 @@ button{
   <div>Profile App</div>
   <div>
     <span id="topName">Guest</span>
-    <span class="badge">Lv <span id="topLevel">0</span></span>
+    Lv <span id="topLevel">0</span>
   </div>
 </header>
 
 <div class="container">
 
 <!-- LOGIN -->
-<div id="login">
+<div id="loginScreen">
   <div class="card">
-    <h3>Login / Opret</h3>
+    <h3>Login</h3>
 
     <input id="username" placeholder="Username">
-    <input id="avatar" placeholder="Avatar emoji (🙂)">
+    <input id="avatar" placeholder="Avatar 🙂">
 
     <button class="primary" onclick="login()">Enter</button>
   </div>
 </div>
 
 <!-- PROFILE -->
-<div id="profile" class="profile">
+<div id="app" class="hidden">
 
   <div class="card">
     <h3>Profil</h3>
@@ -143,21 +113,9 @@ button{
   </div>
 
   <div class="card">
-    <h3>Chat Tags</h3>
+    <h3>Chat</h3>
 
-    <select id="tagSelect">
-      <option value="user">User</option>
-      <option value="pro">Pro (lvl 3)</option>
-      <option value="elite">Elite (lvl 5)</option>
-    </select>
-
-    <button class="primary" onclick="saveTag()">Gem Tag</button>
-  </div>
-
-  <div class="card">
-    <h3>Chat (local demo)</h3>
-
-    <div id="chatBox"></div>
+    <div id="chatBox" style="height:200px; overflow:auto; background:#1f2937; padding:10px; border-radius:10px;"></div>
 
     <input id="msg" placeholder="Skriv besked">
     <button class="primary" onclick="sendMsg()">Send</button>
@@ -169,40 +127,63 @@ button{
 
 <script>
 
-/* ===== LOCAL PROFILE SYSTEM ===== */
+/* ===== STATE ===== */
+let profile = null;
 
-let profile = JSON.parse(localStorage.getItem("profile")) || null;
-
-/* LOGIN */
+/* LOGIN FIX */
 function login(){
 
-  if(!username.value) return alert("skriv username");
-
-  if(!profile){
-    profile = {
-      name: username.value,
-      avatar: avatar.value || "🙂",
-      level: 1,
-      xp: 0,
-      tag: "user",
-      messages: []
-    };
+  if(!username.value){
+    alert("Skriv username");
+    return;
   }
 
-  save();
-  show();
+  profile = {
+    name: username.value,
+    avatar: avatar.value || "🙂",
+    level: 1,
+    xp: 0,
+    tag: "user",
+    messages: []
+  };
+
+  startApp();
 }
 
-/* SAVE */
-function save(){
-  localStorage.setItem("profile", JSON.stringify(profile));
+/* ENTER KEY FIX */
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "Enter" && loginScreen.style.display !== "none"){
+    login();
+  }
+});
+
+/* START APP */
+function startApp(){
+
+  loginScreen.classList.add("hidden");
+  app.classList.remove("hidden");
+
+  render();
 }
 
-/* SHOW UI */
-function show(){
+/* SEND MSG */
+function sendMsg(){
 
-  login.style.display="none";
-  profileEl.style.display="block";
+  if(!msg.value) return;
+
+  profile.messages.push({
+    text: msg.value
+  });
+
+  profile.xp += 10;
+  profile.level = Math.floor(profile.xp / 100) + 1;
+
+  msg.value="";
+  render();
+}
+
+/* RENDER UI */
+function render(){
 
   pName.innerText = profile.name;
   pAvatar.innerText = profile.avatar;
@@ -214,68 +195,12 @@ function show(){
 
   levelFill.style.width = (profile.xp % 100) + "%";
 
-  renderChat();
-}
-
-/* TAG SYSTEM */
-function saveTag(){
-
-  if(tagSelect.value=="pro" && profile.level < 3){
-    alert("Locked level 3");
-    return;
-  }
-
-  if(tagSelect.value=="elite" && profile.level < 5){
-    alert("Locked level 5");
-    return;
-  }
-
-  profile.tag = tagSelect.value;
-  save();
-  show();
-}
-
-/* CHAT */
-function sendMsg(){
-
-  if(!msg.value) return;
-
-  profile.messages.push({
-    text: msg.value,
-    name: profile.name,
-    avatar: profile.avatar,
-    tag: profile.tag
-  });
-
-  profile.xp += 10;
-  profile.level = Math.floor(profile.xp / 100) + 1;
-
-  save();
-  renderChat();
-  show();
-
-  msg.value="";
-}
-
-function renderChat(){
-
-  chatBox.innerHTML="";
+  chatBox.innerHTML = "";
 
   profile.messages.forEach(m=>{
-    chatBox.innerHTML += `
-      <div class="msg">
-        ${m.avatar} <b>${m.name}</b>
-        <span class="tag">${m.tag}</span><br>
-        ${m.text}
-      </div>
-    `;
+    chatBox.innerHTML += `<div>${profile.avatar} ${m.text}</div>`;
   });
 
-}
-
-/* INIT */
-if(profile){
-  show();
 }
 
 </script>
