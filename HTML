@@ -1,109 +1,38 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Pro</title>
-
-<style>
-:root {
-  --bg:#343541; --text:#fff; --box:#444654;
-}
-.light {
-  --bg:#f7f7f8; --text:#000; --box:#e5e5e5;
-}
-body {
-  margin:0; background:var(--bg); color:var(--text);
-  font-family:Arial;
-}
-.chat { max-width:700px; margin:auto; padding:15px; }
-.msg { padding:10px; margin:8px 0; border-radius:8px; }
-.user { background:var(--box); }
-.ai { background:#10a37f22; }
-
-.input-box {
-  position:fixed; bottom:0; width:100%;
-  display:flex; gap:5px; padding:10px;
-  background:var(--bg);
-}
-input { flex:1; padding:10px; border-radius:8px; border:none; }
-button { padding:10px; border:none; border-radius:8px; cursor:pointer; }
-</style>
+  <meta charset="UTF-8">
+  <title>Testside</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #0d1117;
+      color: #fff;
+      padding: 50px;
+    }
+    h1 {
+      color: #58a6ff;
+    }
+    .box {
+      margin-top: 30px;
+      padding: 20px;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      display: inline-block;
+      background: #161b22;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="chat" id="chat"></div>
+  <h1>✅ Det virker!</h1>
+  <p>Din GitHub Pages side kører korrekt.</p>
 
-<div class="input-box">
-  <button onclick="toggleMode()">🌙</button>
-  <button onclick="startVoice()">🎤</button>
-  <input id="input" placeholder="Skriv..." />
-  <button onclick="send()">Send</button>
-</div>
-
-<script>
-let messages = [];
-
-function add(text, cls) {
-  const d = document.createElement("div");
-  d.className = "msg " + cls;
-  d.innerText = text;
-  chat.appendChild(d);
-  window.scrollTo(0, document.body.scrollHeight);
-}
-
-// 🌙 dark/light
-function toggleMode(){
-  document.body.classList.toggle("light");
-}
-
-// 🎤 voice (Web Speech API)
-function startVoice(){
-  const rec = new webkitSpeechRecognition();
-  rec.lang = "da-DK";
-  rec.onresult = e => {
-    input.value = e.results[0][0].transcript;
-  };
-  rec.start();
-}
-
-// ⚡ streaming chat
-async function send(){
-  const text = input.value;
-  if(!text) return;
-
-  add(text,"user");
-  messages.push({role:"user", content:text});
-  input.value="";
-
-  const aiDiv = document.createElement("div");
-  aiDiv.className="msg ai";
-  chat.appendChild(aiDiv);
-
-  const res = await fetch("DIN_BACKEND_URL/chat-stream", {
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({messages})
-  });
-
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-
-  let full = "";
-
-  while(true){
-    const {done, value} = await reader.read();
-    if(done) break;
-
-    const chunk = decoder.decode(value);
-    full += chunk;
-    aiDiv.innerText = full;
-  }
-
-  messages.push({role:"assistant", content:full});
-}
-</script>
+  <div class="box">
+    <p>Hvis du kan se denne side online, så er alt sat rigtigt op 🎉</p>
+  </div>
 
 </body>
 </html>
