@@ -3,32 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Game Hub</title>
+<title>Workspace</title>
 
 <style>
 body {
   margin:0;
   font-family: system-ui;
-  background:#0b1220;
-  color:white;
+  background:#f5f6f8;
+  color:#111;
 }
 
 /* LOGIN */
-#loginScreen {
+#login {
   position:fixed;
   inset:0;
   display:flex;
   justify-content:center;
   align-items:center;
-  background: radial-gradient(circle at top, #1e293b, #0b1220);
+  background:#0f172a;
 }
 
-.card {
-  background:rgba(255,255,255,0.05);
+.box {
+  background:white;
   padding:20px;
-  border-radius:16px;
+  border-radius:14px;
   width:300px;
-  backdrop-filter: blur(10px);
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
 }
 
 input {
@@ -36,7 +36,7 @@ input {
   padding:10px;
   margin:6px 0;
   border-radius:10px;
-  border:none;
+  border:1px solid #ddd;
 }
 
 button {
@@ -48,7 +48,7 @@ button {
   cursor:pointer;
 }
 
-.primary { background:#4f46e5; color:white; }
+.primary { background:#2563eb; color:white; }
 .danger { background:#ef4444; color:white; }
 
 /* APP */
@@ -57,40 +57,54 @@ button {
 header {
   display:flex;
   justify-content:space-between;
-  padding:15px;
-  background:#111827;
   align-items:center;
-}
-
-.grid {
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
-  gap:15px;
-  padding:20px;
-}
-
-.tile {
-  background:#1f2937;
-  padding:20px;
-  border-radius:16px;
-  cursor:pointer;
-  transition:0.2s;
-}
-
-.tile:hover {
-  transform:scale(1.05);
-}
-
-/* MODALS / GAMES */
-.screen {
-  padding:20px;
-}
-
-canvas {
+  padding:14px 20px;
   background:white;
+  border-bottom:1px solid #e5e7eb;
+}
+
+.container {
+  display:grid;
+  grid-template-columns: 240px 1fr;
+  min-height:calc(100vh - 60px);
+}
+
+/* SIDEBAR */
+.sidebar {
+  background:white;
+  border-right:1px solid #e5e7eb;
+  padding:15px;
+}
+
+.sidebar button {
+  width:100%;
+  margin-bottom:8px;
+  background:#f3f4f6;
+  color:#111;
+}
+
+/* MAIN */
+.main {
+  padding:20px;
+}
+
+/* CARDS */
+.card {
+  background:white;
+  padding:15px;
+  border-radius:12px;
+  border:1px solid #e5e7eb;
+  margin-bottom:10px;
+}
+
+/* POSTS */
+textarea {
+  width:100%;
+  height:80px;
+  padding:10px;
   border-radius:10px;
-  display:block;
-  margin:auto;
+  border:1px solid #ddd;
+  resize:none;
 }
 </style>
 </head>
@@ -98,15 +112,14 @@ canvas {
 <body>
 
 <!-- LOGIN -->
-<div id="loginScreen">
-  <div class="card">
+<div id="login">
+  <div class="box">
     <h2>Login</h2>
-
     <input id="email" placeholder="Email">
     <input id="password" type="password" placeholder="Password">
 
     <button class="primary" onclick="login()">Login</button>
-    <button onclick="signup()">Signup</button>
+    <button onclick="signup()">Opret bruger</button>
   </div>
 </div>
 
@@ -114,42 +127,55 @@ canvas {
 <div id="app" class="hidden">
 
 <header>
-  <h3>🎮 Game Hub</h3>
+  <h3>Workspace</h3>
   <button class="danger" onclick="logout()">Logout</button>
 </header>
 
-<div class="grid">
+<div class="container">
 
-  <div class="tile" onclick="showGame('snake')">🐍 Snake</div>
-  <div class="tile" onclick="showGame('pong')">🏓 Pong</div>
-  <div class="tile" onclick="showGame('profile')">👤 Profile</div>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <button onclick="view('home')">Home</button>
+    <button onclick="view('profile')">Profile</button>
+    <button onclick="view('feed')">Feed</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <div id="home">
+      <div class="card">
+        <h2>Velkommen 👋</h2>
+        <p id="userInfo"></p>
+      </div>
+    </div>
+
+    <div id="profile" class="hidden">
+      <div class="card">
+        <h3>Profil</h3>
+        <p>Din konto er aktiv i systemet.</p>
+      </div>
+    </div>
+
+    <div id="feed" class="hidden">
+
+      <div class="card">
+        <h3>Ny post</h3>
+        <textarea id="postText" placeholder="Skriv noget..."></textarea>
+        <button class="primary" onclick="addPost()">Post</button>
+      </div>
+
+      <div id="posts"></div>
+
+    </div>
+
+  </div>
 
 </div>
-
-<!-- SNAKE -->
-<div id="snake" class="screen hidden">
-  <h2>Snake</h2>
-  <p>Score: <span id="score">0</span></p>
-  <canvas id="snakeCanvas" width="300" height="300"></canvas>
-</div>
-
-<!-- PONG -->
-<div id="pong" class="screen hidden">
-  <h2>Pong</h2>
-  <canvas id="pongCanvas" width="300" height="300"></canvas>
-</div>
-
-<!-- PROFILE -->
-<div id="profile" class="screen hidden">
-  <h2>Profile</h2>
-  <p id="userInfo"></p>
-</div>
-
 </div>
 
 <script type="module">
 
-/* ================= FIREBASE ================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getAuth,
@@ -159,19 +185,18 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-/* 🔥 PUT YOUR CONFIG HERE */
+/* 🔥 Firebase config */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "YOUR_KEY",
   authDomain: "YOUR_DOMAIN",
   projectId: "YOUR_PROJECT",
-  appId: "YOUR_APP_ID"
+  appId: "YOUR_APP"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-/* ================= AUTH ================= */
-
+/* LOGIN */
 window.signup = () => {
   createUserWithEmailAndPassword(auth, email.value, password.value)
     .catch(e => alert(e.message));
@@ -184,103 +209,43 @@ window.login = () => {
 
 window.logout = () => signOut(auth);
 
+/* STATE */
 onAuthStateChanged(auth, user => {
   if(user){
-    loginScreen.classList.add("hidden");
-    app.classList.remove("hidden");
+    login.style.display="none";
+    appDiv.classList.remove("hidden");
 
-    userInfo.innerText = "Logged in: " + user.email;
+    userInfo.innerText = "Logget ind som: " + user.email;
   } else {
-    loginScreen.classList.remove("hidden");
-    app.classList.add("hidden");
+    login.style.display="flex";
+    appDiv.classList.add("hidden");
   }
 });
+
+const appDiv = document.getElementById("app");
 
 </script>
 
 <script>
 
-/* ================= NAV ================= */
-function showGame(id){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.add("hidden"));
+/* NAV */
+function view(id){
+  document.querySelectorAll(".main > div").forEach(d=>d.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
 }
 
-/* ================= SNAKE ================= */
+/* POSTS (local only simple demo) */
+function addPost(){
+  let text = postText.value;
+  if(!text) return;
 
-let s=document.getElementById("snakeCanvas");
-let ctx=s.getContext("2d");
+  let div = document.createElement("div");
+  div.className="card";
+  div.innerText = text;
 
-let snake=[{x:150,y:150}];
-let dx=10,dy=0;
-let food={x:100,y:100};
-let score=0;
-
-function snakeLoop(){
-  requestAnimationFrame(snakeLoop);
-
-  ctx.fillStyle="#fff";
-  ctx.fillRect(0,0,300,300);
-
-  let head={x:snake[0].x+dx,y:snake[0].y+dy};
-  snake.unshift(head);
-
-  if(head.x==food.x && head.y==food.y){
-    food={x:(Math.random()*28|0)*10,y:(Math.random()*28|0)*10};
-    score++;
-    document.getElementById("score").innerText=score;
-  } else snake.pop();
-
-  ctx.fillStyle="#4f46e5";
-  snake.forEach(p=>ctx.fillRect(p.x,p.y,10,10));
-
-  ctx.fillStyle="red";
-  ctx.fillRect(food.x,food.y,10,10);
+  posts.prepend(div);
+  postText.value="";
 }
-snakeLoop();
-
-document.addEventListener("keydown",e=>{
-  if(e.key=="ArrowUp"){dx=0;dy=-10;}
-  if(e.key=="ArrowDown"){dx=0;dy=10;}
-  if(e.key=="ArrowLeft"){dx=-10;dy=0;}
-  if(e.key=="ArrowRight"){dx=10;dy=0;}
-});
-
-/* ================= PONG ================= */
-
-let p=document.getElementById("pongCanvas");
-let pctx=p.getContext("2d");
-
-let ball={x:150,y:150,dx:3,dy:3};
-let paddle=120;
-
-function pong(){
-  requestAnimationFrame(pong);
-
-  pctx.fillStyle="#fff";
-  pctx.fillRect(0,0,300,300);
-
-  ball.x+=ball.dx;
-  ball.y+=ball.dy;
-
-  if(ball.x<0||ball.x>300) ball.dx*=-1;
-  if(ball.y<0) ball.dy*=-1;
-
-  if(ball.y>280 && ball.x>paddle && ball.x<paddle+60){
-    ball.dy*=-1;
-  }
-
-  pctx.fillStyle="#111827";
-  pctx.fillRect(paddle,290,60,10);
-
-  pctx.fillStyle="blue";
-  pctx.fillRect(ball.x,ball.y,10,10);
-}
-pong();
-
-document.addEventListener("mousemove",e=>{
-  paddle=e.clientX;
-});
 
 </script>
 
