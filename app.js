@@ -1,4 +1,4 @@
-const API_KEY = "DIN_API_KEY_HER"; // 🔑 indsæt din nøgle her
+const API_KEY = "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"; // 🔑 indsæt din nøgle her
 
 async function send() {
   const input = document.getElementById("input").value;
