@@ -2,112 +2,106 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<title>AI Chat Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Pro</title>
 
 <style>
+:root {
+  --bg:#343541; --text:#fff; --box:#444654;
+}
+.light {
+  --bg:#f7f7f8; --text:#000; --box:#e5e5e5;
+}
 body {
-  background: #020617;
-  color: white;
-  font-family: Arial;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:Arial;
 }
+.chat { max-width:700px; margin:auto; padding:15px; }
+.msg { padding:10px; margin:8px 0; border-radius:8px; }
+.user { background:var(--box); }
+.ai { background:#10a37f22; }
 
-.chat {
-  width: 420px;
-  background: #0f172a;
-  border-radius: 12px;
-  padding: 15px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+.input-box {
+  position:fixed; bottom:0; width:100%;
+  display:flex; gap:5px; padding:10px;
+  background:var(--bg);
 }
-
-.messages {
-  height: 320px;
-  overflow-y: auto;
-  margin-bottom: 10px;
-}
-
-.msg {
-  margin: 8px 0;
-}
-
-.user {
-  text-align: right;
-  color: #38bdf8;
-}
-
-.ai {
-  text-align: left;
-  color: #a78bfa;
-}
-
-.typing {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-input {
-  width: 70%;
-  padding: 10px;
-  border-radius: 6px;
-  border: none;
-}
-
-button {
-  width: 25%;
-  padding: 10px;
-  background: #6366f1;
-  border: none;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-}
+input { flex:1; padding:10px; border-radius:8px; border:none; }
+button { padding:10px; border:none; border-radius:8px; cursor:pointer; }
 </style>
 </head>
 
 <body>
 
-<div class="chat">
-  <div class="messages" id="messages"></div>
+<div class="chat" id="chat"></div>
 
-  <input id="input" placeholder="Skriv til AI..." />
+<div class="input-box">
+  <button onclick="toggleMode()">🌙</button>
+  <button onclick="startVoice()">🎤</button>
+  <input id="input" placeholder="Skriv..." />
   <button onclick="send()">Send</button>
 </div>
 
 <script>
-const messages = document.getElementById("messages");
+let messages = [];
 
 function add(text, cls) {
-  const div = document.createElement("div");
-  div.className = "msg " + cls;
-  div.innerText = text;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
+  const d = document.createElement("div");
+  d.className = "msg " + cls;
+  d.innerText = text;
+  chat.appendChild(d);
+  window.scrollTo(0, document.body.scrollHeight);
 }
 
-function send() {
-  const input = document.getElementById("input");
+// 🌙 dark/light
+function toggleMode(){
+  document.body.classList.toggle("light");
+}
+
+// 🎤 voice (Web Speech API)
+function startVoice(){
+  const rec = new webkitSpeechRecognition();
+  rec.lang = "da-DK";
+  rec.onresult = e => {
+    input.value = e.results[0][0].transcript;
+  };
+  rec.start();
+}
+
+// ⚡ streaming chat
+async function send(){
   const text = input.value;
-  if (!text) return;
+  if(!text) return;
 
-  add(text, "user");
-  input.value = "";
+  add(text,"user");
+  messages.push({role:"user", content:text});
+  input.value="";
 
-  const typing = document.createElement("div");
-  typing.className = "typing";
-  typing.innerText = "AI skriver...";
-  messages.appendChild(typing);
+  const aiDiv = document.createElement("div");
+  aiDiv.className="msg ai";
+  chat.appendChild(aiDiv);
 
-  setTimeout(() => {
-    typing.remove();
+  const res = await fetch("DIN_BACKEND_URL/chat-stream", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({messages})
+  });
 
-    // FAKE AI (kan skiftes ud med rigtig API)
-    const reply = "🤖: " + text + " ... interessant!";
-    add(reply, "ai");
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
 
-  }, 800);
+  let full = "";
+
+  while(true){
+    const {done, value} = await reader.read();
+    if(done) break;
+
+    const chunk = decoder.decode(value);
+    full += chunk;
+    aiDiv.innerText = full;
+  }
+
+  messages.push({role:"assistant", content:full});
 }
 </script>
 
