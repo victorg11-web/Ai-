@@ -1,276 +1,337 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Cyber Arcade Hub</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arcade Hub</title>
 
 <style>
 body {
   margin: 0;
-  font-family: monospace;
-  color: #00ffcc;
-  background: black;
-  overflow-x: hidden;
-}
-
-/* MATRIX CANVAS */
-#matrix {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: -1;
+  font-family: system-ui, Arial;
+  background: #f4f6f8;
+  color: #1f2937;
 }
 
 /* HEADER */
 header {
   display: flex;
   justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid #00ffcc;
-  background: rgba(0,0,0,0.7);
+  align-items: center;
+  padding: 14px 20px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
 }
 
 nav button {
-  margin: 3px;
-  background: transparent;
-  border: 1px solid #00ffcc;
-  color: #00ffcc;
-  padding: 6px 10px;
+  background: #f3f4f6;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
 nav button:hover {
-  background: #00ffcc;
-  color: black;
+  background: #e5e7eb;
 }
 
-/* SECTIONS */
-section { display:none; padding:20px; }
-.active { display:block; }
+/* LAYOUT */
+section {
+  display: none;
+  padding: 20px;
+}
 
-/* CHAT */
-#chatBox {
-  border: 1px solid #00ffcc;
-  height: 200px;
-  overflow-y: auto;
-  padding: 10px;
-  margin-bottom: 10px;
+.active {
+  display: block;
+}
+
+/* CARDS */
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 /* CANVAS */
 canvas.game {
-  border: 2px solid #00ffcc;
-  display:block;
-  margin:10px auto;
+  display: block;
+  margin: 10px auto;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }
 
-/* BUTTONS */
+/* CHAT */
+#chatBox {
+  height: 220px;
+  overflow-y: auto;
+  padding: 10px;
+  background: #f9fafb;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+/* LOGIN MODAL */
+#loginBox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.loginCard {
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  width:280px;
+}
+
+input {
+  width: 70%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
 button {
-  cursor:pointer;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #111827;
+  color: white;
+  cursor: pointer;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="matrix"></canvas>
+<!-- LOGIN -->
+<div id="loginBox">
+  <div class="loginCard">
+    <h3>Login / Signup</h3>
+    <input id="user" placeholder="Brugernavn"><br><br>
+    <input id="pass" type="password" placeholder="Kodeord"><br><br>
+
+    <button onclick="login()">Login</button>
+    <button onclick="signup()">Opret</button>
+  </div>
+</div>
 
 <header>
-  <h2>⚡ CYBER ARCADE</h2>
+  <h3>🎮 Arcade Hub</h3>
+
   <nav>
     <button onclick="show('home')">Home</button>
     <button onclick="show('snake')">Snake</button>
     <button onclick="show('pong')">Pong</button>
     <button onclick="show('chat')">AI</button>
-    <button onclick="toggleMusic()">🎵</button>
+    <button onclick="logout()">Logout</button>
   </nav>
 </header>
 
 <!-- HOME -->
 <section id="home" class="active">
-  <h2>🏠 Dashboard</h2>
-  <p>Velkommen til Cyber Arcade Hub</p>
+  <div class="card">
+    <h2>Velkommen 👋</h2>
+    <p id="welcome"></p>
+  </div>
 
-  <h3>🏆 Achievements</h3>
-  <div id="achievements"></div>
+  <div class="card">
+    <h3>🏆 Achievements</h3>
+    <div id="achievements"></div>
+  </div>
 </section>
 
 <!-- SNAKE -->
 <section id="snake">
-  <h2>🐍 Snake</h2>
-  <canvas id="snakeCanvas" width="300" height="300" class="game"></canvas>
+  <div class="card">
+    <h2>Snake</h2>
+    <p>Score: <span id="score">0</span></p>
+    <canvas id="snakeCanvas" width="300" height="300" class="game"></canvas>
+  </div>
 </section>
 
 <!-- PONG -->
 <section id="pong">
-  <h2>🏓 Pong</h2>
-  <canvas id="pongCanvas" width="300" height="300" class="game"></canvas>
+  <div class="card">
+    <h2>Pong</h2>
+    <canvas id="pongCanvas" width="300" height="300" class="game"></canvas>
+  </div>
 </section>
 
-<!-- CHAT BOT -->
+<!-- CHAT -->
 <section id="chat">
-  <h2>🧠 Cyber AI</h2>
-  <div id="chatBox"></div>
-  <input id="input" placeholder="skriv noget..." />
-  <button onclick="sendMsg()">Send</button>
+  <div class="card">
+    <h2>AI Chat</h2>
+    <div id="chatBox"></div>
+    <input id="input" placeholder="Skriv..." />
+    <button onclick="sendMsg()">Send</button>
+  </div>
 </section>
 
 <script>
 
-/* ================= MATRIX BACKGROUND ================= */
-const canvas = document.getElementById("matrix");
-const ctx = canvas.getContext("2d");
+/* ================= LOGIN ================= */
 
-canvas.height = window.innerHeight;
-canvas.width = window.innerWidth;
+let currentUser = null;
 
-let letters = "01CYBERHACKER0101".split("");
-let fontSize = 14;
-let columns = canvas.width / fontSize;
+function signup(){
+  let u=user.value;
+  let p=pass.value;
 
-let drops = Array(Math.floor(columns)).fill(1);
+  let users = JSON.parse(localStorage.getItem("users")||"{}");
 
-function drawMatrix() {
-  ctx.fillStyle = "rgba(0,0,0,0.05)";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
+  if(users[u]) return alert("Bruger findes allerede");
 
-  ctx.fillStyle = "#00ffcc";
-  ctx.font = fontSize + "px monospace";
+  users[u]=p;
+  localStorage.setItem("users",JSON.stringify(users));
 
-  drops.forEach((y, i) => {
-    let text = letters[Math.floor(Math.random()*letters.length)];
-    ctx.fillText(text, i*fontSize, y*fontSize);
-
-    if (y*fontSize > canvas.height && Math.random() > 0.975) {
-      drops[i] = 0;
-    }
-
-    drops[i]++;
-  });
+  alert("Bruger oprettet!");
 }
-setInterval(drawMatrix, 40);
 
-/* ================= NAV ================= */
-function show(id) {
-  document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+function login(){
+  let u=user.value;
+  let p=pass.value;
+
+  let users = JSON.parse(localStorage.getItem("users")||"{}");
+
+  if(users[u] && users[u]===p){
+    currentUser=u;
+    localStorage.setItem("session",u);
+
+    loginBox.style.display="none";
+    welcome.innerText="Logget ind som "+u;
+
+  } else alert("Forkert login");
+}
+
+function logout(){
+  localStorage.removeItem("session");
+  location.reload();
+}
+
+/* AUTO LOGIN */
+let session = localStorage.getItem("session");
+if(session){
+  currentUser=session;
+  loginBox.style.display="none";
+  welcome.innerText="Logget ind som "+session;
+}
+
+/* BLOCK */
+function requireLogin(){
+  if(!currentUser){
+    alert("Login først!");
+    return false;
+  }
+  return true;
+}
+
+/* NAV */
+function show(id){
+  if(!requireLogin()) return;
+
+  document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
-/* ================= SOUND SYSTEM ================= */
-let musicOn = false;
-let audioCtx;
-
-function toggleMusic() {
-  if (!audioCtx) audioCtx = new AudioContext();
-  musicOn = !musicOn;
-}
-
-function beep(freq=400) {
-  if (!audioCtx || !musicOn) return;
-
-  let o = audioCtx.createOscillator();
-  let g = audioCtx.createGain();
-
-  o.type = "square";
-  o.frequency.value = freq;
-
-  g.gain.value = 0.05;
-
-  o.connect(g);
-  g.connect(audioCtx.destination);
-
-  o.start();
-  o.stop(audioCtx.currentTime + 0.1);
-}
-
 /* ================= ACHIEVEMENTS ================= */
-let achievements = JSON.parse(localStorage.getItem("ach")) || [];
 
-function addAch(text) {
-  if (!achievements.includes(text)) {
-    achievements.push(text);
-    localStorage.setItem("ach", JSON.stringify(achievements));
+let ach = JSON.parse(localStorage.getItem("ach")||"[]");
+
+function addAch(t){
+  if(!ach.includes(t)){
+    ach.push(t);
+    localStorage.setItem("ach",JSON.stringify(ach));
     renderAch();
   }
 }
 
-function renderAch() {
-  document.getElementById("achievements").innerHTML =
-    achievements.map(a => "🏆 " + a).join("<br>");
+function renderAch(){
+  achievements.innerHTML = ach.map(a=>"🏆 "+a).join("<br>");
 }
 renderAch();
 
-/* ================= CHAT BOT ================= */
-function sendMsg() {
-  let input = document.getElementById("input");
-  let box = document.getElementById("chatBox");
+/* ================= CHAT ================= */
 
-  let msg = input.value;
-  box.innerHTML += "<div>You: " + msg + "</div>";
+function sendMsg(){
+  if(!requireLogin()) return;
 
-  let reply = "Jeg forstår ikke helt 🤖";
-  if (msg.includes("hej")) reply = "Hej hacker 😎";
-  if (msg.includes("snake")) reply = "Snake er i menuen 🐍";
-  if (msg.includes("pong")) reply = "Ping pong mode aktiveret 🏓";
+  let i=input;
+  let box=chatBox;
 
-  box.innerHTML += "<div>AI: " + reply + "</div>";
-  input.value = "";
+  box.innerHTML+=`<div><b>Du:</b> ${i.value}</div>`;
 
-  beep(600);
+  let r="🤖 ...";
+  if(i.value.includes("hej")) r="Hej!";
+  if(i.value.includes("snake")) r="Snake er klar";
+  if(i.value.includes("pong")) r="Pong aktiv";
+
+  box.innerHTML+=`<div><b>AI:</b> ${r}</div>`;
+  i.value="";
 }
 
 /* ================= SNAKE ================= */
-const s = document.getElementById("snakeCanvas");
-const sctx = s.getContext("2d");
 
-let snake = [{x:150,y:150}];
-let dx = 10, dy = 0;
-let food = {x:50,y:50};
+let s=document.getElementById("snakeCanvas");
+let sctx=s.getContext("2d");
 
-function snakeGame() {
+let snake=[{x:150,y:150}];
+let dx=10,dy=0;
+let food={x:100,y:100};
+let score=0;
+
+function snakeGame(){
   requestAnimationFrame(snakeGame);
 
-  sctx.fillStyle="black";
+  sctx.fillStyle="#fff";
   sctx.fillRect(0,0,300,300);
 
-  let head = {x:snake[0].x+dx, y:snake[0].y+dy};
+  let h={x:snake[0].x+dx,y:snake[0].y+dy};
+  snake.unshift(h);
 
-  snake.unshift(head);
-
-  if (head.x===food.x && head.y===food.y) {
-    food.x=Math.random()*280|0;
-    food.y=Math.random()*280|0;
-    addAch("Spiste food i Snake");
-    beep(800);
+  if(h.x==food.x && h.y==food.y){
+    food={x:(Math.random()*28|0)*10,y:(Math.random()*28|0)*10};
+    score++;
+    document.getElementById("score").innerText=score;
+    addAch("Snake score");
   } else snake.pop();
 
-  sctx.fillStyle="#00ffcc";
+  sctx.fillStyle="#4f46e5";
   snake.forEach(p=>sctx.fillRect(p.x,p.y,10,10));
 
-  sctx.fillStyle="#ff00ff";
+  sctx.fillStyle="#ef4444";
   sctx.fillRect(food.x,food.y,10,10);
 }
 snakeGame();
 
 document.addEventListener("keydown",e=>{
-  if(e.key=="ArrowUp") {dx=0;dy=-10;}
-  if(e.key=="ArrowDown") {dx=0;dy=10;}
-  if(e.key=="ArrowLeft") {dx=-10;dy=0;}
-  if(e.key=="ArrowRight") {dx=10;dy=0;}
+  if(e.key=="ArrowUp"){dx=0;dy=-10;}
+  if(e.key=="ArrowDown"){dx=0;dy=10;}
+  if(e.key=="ArrowLeft"){dx=-10;dy=0;}
+  if(e.key=="ArrowRight"){dx=10;dy=0;}
 });
 
 /* ================= PONG ================= */
-const p = document.getElementById("pongCanvas");
-const pctx = p.getContext("2d");
 
-let ball = {x:150,y:150,dx:3,dy:3};
-let paddle = 120;
+let p=document.getElementById("pongCanvas");
+let pctx=p.getContext("2d");
 
-function pong() {
+let ball={x:150,y:150,dx:3,dy:3};
+let paddle=120;
+
+function pong(){
   requestAnimationFrame(pong);
 
-  pctx.fillStyle="black";
+  pctx.fillStyle="#fff";
   pctx.fillRect(0,0,300,300);
 
   ball.x+=ball.dx;
@@ -279,20 +340,20 @@ function pong() {
   if(ball.x<0||ball.x>300) ball.dx*=-1;
   if(ball.y<0) ball.dy*=-1;
 
-  if(ball.y>280 && ball.x>paddle && ball.x<paddle+60) {
+  if(ball.y>280 && ball.x>paddle && ball.x<paddle+60){
     ball.dy*=-1;
-    beep(300);
   }
 
-  pctx.fillStyle="#00ffcc";
+  pctx.fillStyle="#111827";
   pctx.fillRect(paddle,290,60,10);
 
+  pctx.fillStyle="#2563eb";
   pctx.fillRect(ball.x,ball.y,10,10);
 }
 pong();
 
 document.addEventListener("mousemove",e=>{
-  paddle = e.clientX;
+  paddle=e.clientX;
 });
 
 </script>
