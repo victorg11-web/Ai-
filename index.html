@@ -3,209 +3,213 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MiniTube Ultimate</title>
+<title>MiniTube Modern+</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0f0f0f;
-  --card:#1f1f1f;
-  --text:white;
+  --bg:#0b0f19;
+  --panel:#121a2a;
+  --card:#162033;
+  --text:#e8eefc;
+  --muted:#93a4c7;
+  --accent:#ff3b3b;
+  --accent2:#4f7cff;
 }
-
 body.light{
-  --bg:#f5f5f5;
-  --card:white;
-  --text:black;
+  --bg:#f5f7fb;
+  --panel:#ffffff;
+  --card:#f0f3f9;
+  --text:#0b1220;
+  --muted:#51607a;
 }
-
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Arial;
+  font-family:Inter,Arial;
   background:var(--bg);
   color:var(--text);
 }
-
 header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:10px;
-  background:#181818;
+  padding:14px 18px;
+  background:var(--panel);
   position:sticky;
   top:0;
+  z-index:10;
 }
-
-.logo{color:red;font-weight:bold;font-size:20px;}
-
-.search{width:40%;padding:8px;border-radius:20px;border:none;}
-
-.container{display:flex;}
-
-.sidebar{width:200px;padding:10px;background:#121212;min-height:100vh;}
-
-.video-grid{
-  flex:1;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:10px;
-  padding:10px;
-}
-
-.card{
-  background:var(--card);
-  border-radius:10px;
-  padding:10px;
-  cursor:pointer;
-}
-
-.thumb{height:120px;background:#333;border-radius:8px;}
-
-.player{display:none;padding:10px;}
-
-iframe{width:100%;height:400px;}
-
-.likebar button{margin:5px}
-
-.comment{font-size:12px;opacity:0.8}
-
-.feed{
-  display:none;
-  height:100vh;
-  overflow-y:scroll;
-  scroll-snap-type:y mandatory;
-}
-
-.feedVideo{
-  height:100vh;
-  scroll-snap-align:start;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-}
-
-.feedVideo iframe{height:60vh;width:90%;}
-
+.logo{font-weight:800;color:var(--accent)}
+.search{width:40%;padding:10px 14px;border-radius:999px;border:none;background:var(--card);color:var(--text)}
+.layout{display:flex}
+.sidebar{width:220px;background:var(--panel);padding:14px;min-height:100vh}
+.sidebar p{color:var(--muted);cursor:pointer;padding:10px;border-radius:10px}
+.sidebar p:hover{background:var(--card);color:var(--text)}
+.main{flex:1;padding:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.card{background:var(--card);border-radius:16px;overflow:hidden;cursor:pointer;transition:.2s}
+.card:hover{transform:translateY(-4px)}
+.thumb{height:140px;background:linear-gradient(135deg,#2b3a6b,#1a2340)}
+.card-content{padding:10px}
+.title{font-weight:600;margin:0}
+.small{font-size:12px;color:var(--muted)}
+.admin{margin:14px;padding:14px;background:var(--panel);border-radius:16px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px}
+.admin input{padding:10px;border-radius:10px;border:none;background:var(--card);color:var(--text)}
+.admin button{border:none;border-radius:10px;background:var(--accent2);color:white;cursor:pointer}
+.player{display:none;padding:20px}
+iframe{width:100%;height:420px;border-radius:14px;border:none}
+.meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.likebtn{padding:8px 12px;border:none;border-radius:10px;cursor:pointer;background:var(--card)}
+.profile{display:flex;gap:10px;align-items:center}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(45deg,#ff3b3b,#4f7cff)}
+.commentBox{margin-top:12px;background:var(--card);padding:10px;border-radius:12px}
+.comment{margin-left:10px;padding-left:10px;border-left:2px solid var(--accent2)}
+.trendingBadge{font-size:11px;background:var(--accent);padding:2px 6px;border-radius:6px;margin-left:6px}
 </style>
 </head>
 <body>
 
 <header>
-<div class="logo">▶ MiniTube</div>
-<input class="search" placeholder="Search..." oninput="search(this.value)" />
+<div class="logo">MiniTube+</div>
+<input class="search" placeholder="Søg..." oninput="search(this.value)" />
 <button onclick="toggleTheme()">🌙</button>
-<button onclick="toggleFeed()">📱</button>
 </header>
 
-<div class="container">
+<div class="admin">
+<input id="title" placeholder="Titel" />
+<input id="link" placeholder="YouTube link" />
+<input id="channel" placeholder="Bruger" />
+<button onclick="upload()">Upload</button>
+</div>
+
+<div class="layout">
 <div class="sidebar">
-<p onclick="filter('all')">Home</p>
-<p onclick="filter('gaming')">Gaming</p>
-<p onclick="filter('music')">Music</p>
-<p onclick="filter('tech')">Tech</p>
+<p onclick="render(videos)">🏠 Home</p>
+<p onclick="showTrending()">📊 Trending</p>
 </div>
-
-<div id="grid" class="video-grid"></div>
+<div class="main">
+<div id="grid" class="grid"></div>
 </div>
-
-<div id="feed" class="feed"></div>
+</div>
 
 <div id="player" class="player">
-<button onclick="back()">⬅ Back</button>
+<button onclick="back()">⬅ Tilbage</button>
 <iframe id="frame"></iframe>
-<div class="likebar">
-<button onclick="like()">👍</button>
-<button onclick="dislike()">👎</button>
-<span id="likes">0</span>
-</div>
+<div class="meta">
+<div class="profile">
+<div class="avatar"></div>
 <div>
-<input id="commentInput" placeholder="Comment" />
+<h3 id="ptitle"></h3>
+<div class="small" id="pchannel"></div>
+</div>
+</div>
+<button class="likebtn" onclick="like()">👍 <span id="likes">0</span></button>
+</div>
+
+<div class="commentBox">
+<h4>💬 Comments</h4>
+<input id="cinput" placeholder="Skriv kommentar" />
 <button onclick="addComment()">Send</button>
 <div id="comments"></div>
 </div>
 </div>
 
 <script>
-
-let videos=[
-  {id:"dQw4w9WgXcQ",title:"Gaming Highlights",cat:"gaming",likes:0,dislikes:0,comments:[]},
-  {id:"M7lc1UVf-VE",title:"Tech Review",cat:"tech",likes:0,dislikes:0,comments:[]},
-  {id:"5qap5aO4i9A",title:"Music Chill",cat:"music",likes:0,dislikes:0,comments:[]}
-];
+let videos=JSON.parse(localStorage.getItem("videos")||"[]");
+if(videos.length===0){
+videos=[
+{id:"dQw4w9WgXcQ",title:"Gaming Highlights",channel:"Alex",likes:12,comments:[],views:120},
+{id:"5qap5aO4i9A",title:"LoFi Music",channel:"Mia",likes:8,comments:[],views:300}
+];}
 
 let current=null;
-let subs=[];
+let user=prompt("Brugernavn?")||"Guest";
 
-function render(list=videos){
-  document.getElementById("grid").innerHTML=list.map(v=>`
-    <div class="card" onclick="openVideo('${v.id}')">
-      <div class="thumb"></div>
-      <b>${v.title}</b>
-    </div>
-  `).join("");
+function save(){localStorage.setItem("videos",JSON.stringify(videos));}
+
+function extractID(url){
+if(url.includes("youtu.be/"))return url.split("youtu.be/")[1].split("?")[0];
+if(url.includes("v="))return url.split("v=")[1].split("&")[0];
+return "";
 }
 
-function openVideo(id){
-  current=videos.find(v=>v.id===id);
-  document.querySelector(".container").style.display="none";
-  document.getElementById("player").style.display="block";
-  document.getElementById("frame").src="https://www.youtube.com/embed/"+id;
-  updateUI();
+function render(list=videos){
+list=list.sort((a,b)=>b.views-a.views);
+
+document.getElementById("grid").innerHTML=list.map(v=>`
+<div class="card" onclick="openV('${v.id}')">
+<div class="thumb"></div>
+<div class="card-content">
+<p class="title">${v.title}${v.views>200?'<span class=\"trendingBadge\">TRENDING</span>':''}</p>
+<div class="small">👤 ${v.channel}</div>
+</div>
+</div>`).join("");
+}
+
+function openV(id){
+current=videos.find(v=>v.id===id);
+current.views++;
+save();
+
+document.querySelector(".layout").style.display="none";
+document.querySelector(".admin").style.display="none";
+document.getElementById("player").style.display="block";
+
+frame.src="https://www.youtube.com/embed/"+id;
+ptitle.innerText=current.title;
+pchannel.innerText="👤 "+current.channel;
+likes.innerText=current.likes;
+renderComments();
 }
 
 function back(){
-  document.querySelector(".container").style.display="flex";
-  document.getElementById("player").style.display="none";
+document.querySelector(".layout").style.display="flex";
+document.querySelector(".admin").style.display="grid";
+document.getElementById("player").style.display="none";
 }
 
-function like(){current.likes++;updateUI();}
-function dislike(){current.dislikes++;updateUI();}
-
-function updateUI(){
-  document.getElementById("likes").innerText=current.likes+" 👍 / "+current.dislikes+" 👎";
-  document.getElementById("comments").innerHTML=current.comments.map(c=>"💬 "+c).join("<br>");
-}
+function like(){current.likes++;save();likes.innerText=current.likes;}
 
 function addComment(){
-  let c=document.getElementById("commentInput").value;
-  current.comments.push(c);
-  updateUI();
+let text=cinput.value;
+if(!text)return;
+current.comments.push({user,text,replies:[]});
+cinput.value="";
+save();renderComments();
 }
 
-function search(q){
-  render(videos.filter(v=>v.title.toLowerCase().includes(q.toLowerCase())));
+function reply(i){
+let r=prompt("Reply:");
+if(!r)return;
+current.comments[i].replies.push({user,text:r});
+save();renderComments();
 }
 
-function filter(cat){
-  if(cat=="all") render();
-  else render(videos.filter(v=>v.cat==cat));
+function renderComments(){
+comments.innerHTML=current.comments.map((c,i)=>`
+<div class='comment'>
+<b>${c.user}</b>: ${c.text}
+<button onclick="reply(${i})">reply</button>
+<div style='margin-left:10px'>
+${c.replies.map(r=>`↳ <b>${r.user}</b>: ${r.text}`).join("<br>")}
+</div>
+</div>`).join("<br>");
 }
 
+function upload(){
+let t=title.value,l=link.value,c=channel.value;
+if(!t||!l||!c)return;
+let id=extractID(l);
+if(!id)return alert("Bad link");
+videos.unshift({title:t,id,channel:c,likes:0,comments:[],views:0});
+save();render();
+}
+
+function search(q){render(videos.filter(v=>v.title.toLowerCase().includes(q.toLowerCase())));}
+function showTrending(){render([...videos].sort((a,b)=>b.views-a.views));}
 function toggleTheme(){document.body.classList.toggle("light");}
 
-function toggleFeed(){
-  let f=document.getElementById("feed");
-  if(f.style.display=="block"){
-    f.style.display="none";
-    document.querySelector(".container").style.display="flex";
-  }else{
-    document.querySelector(".container").style.display="none";
-    f.style.display="block";
-    renderFeed();
-  }
-}
-
-function renderFeed(){
-  document.getElementById("feed").innerHTML=videos.map(v=>`
-    <div class="feedVideo">
-      <iframe src="https://www.youtube.com/embed/${v.id}"></iframe>
-      <b>${v.title}</b>
-    </div>
-  `).join("");
-}
-
 render();
-
 </script>
-
 </body>
 </html>
