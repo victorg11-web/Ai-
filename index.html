@@ -5,79 +5,73 @@
 <title>AI Chat</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  color: white;
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  color:white;
 }
 
-.chat {
-  width: 420px;
-  height: 650px;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+.chat{
+  width:420px;
+  height:650px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(20px);
+  border-radius:20px;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
 }
 
-.header {
-  padding: 15px;
-  text-align: center;
-  font-weight: bold;
-  background: rgba(255,255,255,0.05);
+.header{
+  padding:15px;
+  text-align:center;
+  font-weight:bold;
+  background:rgba(255,255,255,0.05);
 }
 
-.messages {
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
+.messages{
+  flex:1;
+  padding:10px;
+  overflow-y:auto;
 }
 
-.msg {
-  margin: 8px;
-  padding: 10px;
-  border-radius: 15px;
-  max-width: 80%;
+.msg{
+  margin:8px;
+  padding:10px;
+  border-radius:15px;
+  max-width:80%;
 }
 
-.user {
-  background: #4f7cff;
-  margin-left: auto;
+.user{background:#4f7cff;margin-left:auto;}
+.ai{background:rgba(255,255,255,0.15);}
+
+.inputBox{
+  display:flex;
+  padding:10px;
+  gap:5px;
+  background:rgba(255,255,255,0.05);
 }
 
-.ai {
-  background: rgba(255,255,255,0.15);
+input{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  outline:none;
 }
 
-.inputBox {
-  display: flex;
-  padding: 10px;
-  gap: 5px;
-  background: rgba(255,255,255,0.05);
-}
-
-input {
-  flex: 1;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-}
-
-button {
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: #4f7cff;
-  color: white;
-  cursor: pointer;
+button{
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#4f7cff;
+  color:white;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -86,7 +80,7 @@ button {
 
 <div class="chat">
 
-  <div class="header">🤖 ChatGPT AI</div>
+  <div class="header">🤖 Mini ChatGPT</div>
 
   <div id="messages" class="messages"></div>
 
@@ -101,59 +95,53 @@ button {
 
 const API_KEY = "DIN_API_KEY_HER"; // 🔑 indsæt din key her
 
-const messages = document.getElementById("messages");
-
-function addMsg(text, type) {
-  const div = document.createElement("div");
-  div.className = "msg " + type;
-  div.innerText = text;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
+function add(text,type){
+  const div=document.createElement("div");
+  div.className="msg "+type;
+  div.innerText=text;
+  document.getElementById("messages").appendChild(div);
+  document.getElementById("messages").scrollTop=9999;
 }
 
-async function send() {
-  const input = document.getElementById("input").value;
+async function send(){
+  const input=document.getElementById("input").value;
+  if(!input)return;
 
-  if (!input) return;
+  add(input,"user");
+  document.getElementById("input").value="";
 
-  addMsg(input, "user");
-  document.getElementById("input").value = "";
+  add("Tænker...","ai");
 
-  addMsg("Tænker...", "ai");
-
-  try {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + API_KEY
+  try{
+    const res=await fetch("https://api.openai.com/v1/chat/completions",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+API_KEY
       },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: "Du er en hjælpsom dansk AI." },
-          { role: "user", content: input }
+      body:JSON.stringify({
+        model:"gpt-4o-mini",
+        messages:[
+          {role:"system",content:"Du er en hjælpsom dansk AI."},
+          {role:"user",content:input}
         ]
       })
     });
 
-    const data = await res.json();
+    const data=await res.json();
 
-    console.log(data);
-
-    // fjern "Tænker..."
-    messages.removeChild(messages.lastChild);
+    document.getElementById("messages").removeChild(
+      document.getElementById("messages").lastChild
+    );
 
     const reply =
       data?.choices?.[0]?.message?.content ||
-      "Fejl: ingen svar (tjek API key / credits)";
+      "Fejl: ingen svar";
 
-    addMsg(reply, "ai");
+    add(reply,"ai");
 
-  } catch (err) {
-    messages.removeChild(messages.lastChild);
-    addMsg("Fejl: kunne ikke kontakte AI", "ai");
-    console.error(err);
+  }catch(e){
+    add("Fejl i forbindelse til AI","ai");
   }
 }
 
