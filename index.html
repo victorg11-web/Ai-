@@ -1,148 +1,146 @@
-import { useState, useEffect, useRef } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { motion } from "framer-motion";
-
-// NOTE:
-// To make this a REAL AI, you MUST connect an API (e.g. OpenAI) via a backend.
-// NEVER put API keys directly in frontend (GitHub Pages is public).
-
-export default function ChatApp() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [typing, setTyping] = useState(false);
-  const [listening, setListening] = useState(false);
-  const recognitionRef = useRef(null);
-
-  // Load memory
-  useEffect(() => {
-    const saved = localStorage.getItem("chat");
-    if (saved) setMessages(JSON.parse(saved));
-  }, []);
-
-  // Save memory
-  useEffect(() => {
-    localStorage.setItem("chat", JSON.stringify(messages));
-  }, [messages]);
-
-  // 🧠 Fake AI (replace with real API)
-  const getAIResponse = async (text) => {
-    // HERE YOU CONNECT OPENAI API OR YOUR BACKEND
-    return "🤖 Jeg forstår: " + text;
-  };
-
-  const sendMessage = async (msgText) => {
-    const text = msgText || input;
-    if (!text.trim()) return;
-
-    const userMessage = { role: "user", text };
-    const updated = [...messages, userMessage];
-    setMessages(updated);
-    setInput("");
-
-    setTyping(true);
-
-    const reply = await getAIResponse(text);
-
-    const aiMessage = { role: "ai", text: reply };
-    setMessages((prev) => [...prev, aiMessage]);
-
-    speak(reply); // 🎤 voice output
-    setTyping(false);
-  };
-
-  // 🎤 Speech to text
-  const startListening = () => {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert("Din browser understøtter ikke voice input");
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = "da-DK";
-    recognition.interimResults = false;
-
-    recognition.onstart = () => setListening(true);
-    recognition.onend = () => setListening(false);
-
-    recognition.onresult = (event) => {
-      const text = event.results[0][0].transcript;
-      sendMessage(text);
-    };
-
-    recognition.start();
-    recognitionRef.current = recognition;
-  };
-
-  // 🔊 Text to speech
-  const speak = (text) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "da-DK";
-    speechSynthesis.speak(utterance);
-  };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-900 via-blue-900 to-black">
-      <Card className="w-full max-w-2xl backdrop-blur-xl bg-white/10 border-white/20 text-white rounded-2xl shadow-2xl">
-        <CardContent className="p-4 flex flex-col h-[80vh]">
-
-          {/* HEADER */}
-          <div className="text-center text-xl font-bold mb-2">
-            🤖 Ultra AI Chat
-          </div>
-
-          {/* CHAT */}
-          <div className="flex-1 overflow-y-auto space-y-3 p-2">
-            {messages.map((msg, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`p-3 rounded-2xl max-w-[80%] shadow-lg ${
-                  msg.role === "user"
-                    ? "ml-auto bg-blue-600"
-                    : "mr-auto bg-white/20"
-                }`}
-              >
-                {msg.text}
-              </motion.div>
-            ))}
-
-            {typing && (
-              <div className="text-sm text-white/70 animate-pulse">
-                AI skriver...
-              </div>
-            )}
-          </div>
-
-          {/* INPUT */}
-          <div className="flex gap-2 mt-3">
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Skriv eller brug mikrofon..."
-              className="bg-white/10 border-white/20 text-white"
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            />
-
-            <Button onClick={() => sendMessage()}>
-              Send
-            </Button>
-
-            <Button
-              onClick={startListening}
-              className={listening ? "bg-red-500" : "bg-green-500"}
-            >
-              🎤
-            </Button>
-          </div>
-
-        </CardContent>
-      </Card>
-    </div>
-  );
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<title>Ultra AI</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
+
+.chat {
+  width: 400px;
+  height: 600px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.msg {
+  margin: 8px;
+  padding: 10px;
+  border-radius: 12px;
+}
+
+.user { background: #4f7cff; text-align: right; }
+.ai { background: rgba(255,255,255,0.2); }
+
+.input {
+  display: flex;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+}
+
+button {
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="chat">
+  <div id="messages" class="messages"></div>
+
+  <div class="input">
+    <input id="input" placeholder="Skriv eller tal..." />
+    <button onclick="voice()">🎤</button>
+    <button onclick="send()">Send</button>
+  </div>
+</div>
+
+<script>
+
+let memory = [];
+
+function addMsg(text, type) {
+  const div = document.createElement("div");
+  div.className = "msg " + type;
+  div.innerText = text;
+  document.getElementById("messages").appendChild(div);
+  document.getElementById("messages").scrollTop = 9999;
+}
+
+// 🤖 “AI hjerne” (simple rules + smart svar)
+function aiBrain(input) {
+  input = input.toLowerCase();
+
+  if (input.includes("hej")) return "Hej! 👋";
+  if (input.includes("hvad hedder du")) return "Jeg er din lokale AI 🤖";
+  if (input.includes("hvordan går det")) return "Jeg har det fint 😄 hvad med dig?";
+  if (input.includes("tid")) return "Jeg kan ikke se tiden, men din browser kan ⏰";
+  if (input.includes("love")) return "Kærlighed er vigtigt ❤️";
+  if (input.includes("hej med dig")) return "Hej med dig også 😎";
+
+  return "Jeg forstår: " + input + " 🤔";
+}
+
+// 💬 send besked
+function send(textFromVoice) {
+  let input = textFromVoice || document.getElementById("input").value;
+  if (!input) return;
+
+  addMsg(input, "user");
+  memory.push({role:"user", text: input});
+
+  let reply = aiBrain(input);
+
+  setTimeout(() => {
+    addMsg(reply, "ai");
+    memory.push({role:"ai", text: reply});
+    speak(reply);
+  }, 500);
+
+  document.getElementById("input").value = "";
+}
+
+// 🎤 Voice input
+function voice() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return alert("Din browser understøtter ikke tale");
+
+  const rec = new SpeechRecognition();
+  rec.lang = "da-DK";
+
+  rec.onresult = (e) => {
+    send(e.results[0][0].transcript);
+  };
+
+  rec.start();
+}
+
+// 🔊 Voice output
+function speak(text) {
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = "da-DK";
+  speechSynthesis.speak(msg);
+}
+
+</script>
+
+</body>
+</html>
