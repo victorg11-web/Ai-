@@ -3,141 +3,218 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CLICKER MMO ECONOMY ULTIMATE</title>
+  <title>CLICKER MMO REWORKED</title>
   <style>
-    body{margin:0;font-family:Arial;background:#020617;color:white;text-align:center;}
-    .container{max-width:1200px;margin:auto;padding:20px;}
-    #score{font-size:3rem;}
-    #clickBtn{padding:20px 40px;font-size:1.5rem;border:none;border-radius:15px;cursor:pointer;background:#22c55e;}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;}
-    .panel{background:rgba(255,255,255,0.05);padding:10px;border-radius:10px;}
-    .btn{padding:6px 10px;border:none;border-radius:8px;cursor:pointer;margin:3px;}
-    input{padding:5px;border-radius:6px;border:none;}
-    .log{max-height:150px;overflow:auto;text-align:left;font-size:0.9rem;}
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:#0b1020;
+      color:white;
+      text-align:center;
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:auto;
+      padding:20px;
+    }
+
+    h1{margin-bottom:5px;}
+
+    #stats{
+      opacity:0.9;
+      margin-bottom:10px;
+    }
+
+    #score{
+      font-size:3rem;
+      margin:10px 0;
+    }
+
+    #clickBtn{
+      padding:18px 40px;
+      font-size:1.4rem;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      background:#22c55e;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:20px;
+    }
+
+    .panel{
+      background:rgba(255,255,255,0.05);
+      padding:12px;
+      border-radius:10px;
+      text-align:left;
+    }
+
+    input{
+      padding:6px;
+      border-radius:6px;
+      border:none;
+      width:100%;
+      margin:5px 0;
+    }
+
+    button.small{
+      padding:6px 10px;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      background:#3b82f6;
+      color:white;
+      margin:3px 0;
+    }
+
+    .log{
+      font-size:0.85rem;
+      opacity:0.85;
+      max-height:140px;
+      overflow:auto;
+    }
+
   </style>
 </head>
 <body>
 
-<div class="container">
-<h1>🌍 CLICKER MMO ECONOMY</h1>
+<div class="wrap">
+  <h1>🔥 CLICKER MMO REWORKED</h1>
 
-<div id="nameTag"></div>
-<div id="score">0</div>
-<div id="wallet">Wallet: 0</div>
-<button id="clickBtn">CLICK</button>
+  <div id="nameTag"></div>
+  <div id="stats"></div>
+  <div id="score">0</div>
 
-<div class="grid">
+  <button id="clickBtn">CLICK</button>
 
-<div class="panel">
-<h3>💰 Wallet Trading</h3>
-<input id="tradeTo" placeholder="Player" />
-<input id="tradeAmount" placeholder="Amount" />
-<button class="btn" onclick="sendTrade()">Send</button>
-<div id="tradeLog" class="log"></div>
-</div>
+  <div class="grid">
 
-<div class="panel">
-<h3>🏛 Auction House (Bidding)</h3>
-<input id="itemName" placeholder="Item" />
-<input id="startPrice" placeholder="Start price" />
-<button class="btn" onclick="listItem()">List</button>
-<div id="auctionLog" class="log"></div>
-</div>
+    <div class="panel">
+      <h3>💰 Wallet + Trading</h3>
+      <div>Wallet: <span id="wallet">0</span></div>
 
-<div class="panel">
-<h3>🎒 Inventory (Rarity + Stats)</h3>
-<button class="btn" onclick="dropItem()">Open Loot</button>
-<div id="inv"></div>
-</div>
+      <input id="tradeTo" placeholder="Player navn" />
+      <input id="tradeAmt" placeholder="Amount" />
+      <button class="small" onclick="trade()">Send trade</button>
 
-<div class="panel">
-<h3>📜 Transactions</h3>
-<div id="tx" class="log"></div>
-</div>
+      <div class="log" id="tradeLog"></div>
+    </div>
 
-</div>
+    <div class="panel">
+      <h3>🏛 Auction House</h3>
+      <input id="item" placeholder="Item navn" />
+      <input id="price" placeholder="Start price" />
+      <button class="small" onclick="listItem()">List item</button>
+
+      <div class="log" id="auctionLog"></div>
+    </div>
+
+    <div class="panel">
+      <h3>🎒 Inventory</h3>
+      <button class="small" onclick="dropItem()">Open loot</button>
+      <div class="log" id="inv"></div>
+    </div>
+
+    <div class="panel">
+      <h3>📜 Transaction Log</h3>
+      <div class="log" id="log"></div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-let score=0;
-let wallet=0;
-let name=prompt("Navn?")||"Player";
+let score = 0;
+let wallet = 0;
+let name = prompt("Dit navn?") || "Player";
 
-let inventory=[];
-let trades=[];
-let auctions=[];
-let txLog=[];
+let inventory = [];
+let trades = [];
+let auctions = [];
+let logs = [];
 
 function rarity(){
-  let r=Math.random();
-  if(r<0.6) return "Common";
-  if(r<0.85) return "Rare";
-  if(r<0.97) return "Epic";
+  let r = Math.random();
+  if(r < 0.6) return "Common";
+  if(r < 0.85) return "Rare";
+  if(r < 0.97) return "Epic";
   return "Legendary";
 }
 
-function stat(){
-  return Math.floor(Math.random()*10+1);
+function addLog(t){
+  logs.push(new Date().toLocaleTimeString()+" - "+t);
 }
 
 function update(){
-  document.getElementById("score").innerText=Math.floor(score);
-  document.getElementById("wallet").innerText="Wallet: "+wallet;
-  document.getElementById("nameTag").innerText=name;
+  document.getElementById("score").innerText = Math.floor(score);
+  document.getElementById("wallet").innerText = wallet;
+  document.getElementById("nameTag").innerText = "Player: " + name;
 
-  document.getElementById("inv").innerHTML=inventory.map(i=>
-    `🎁 ${i.name} (${i.rarity}) ATK:${i.stat}`
+  document.getElementById("inv").innerHTML = inventory.map(i=>
+    `${i.name} (${i.rarity})`
   ).join("<br>");
 
-  document.getElementById("tradeLog").innerHTML=trades.map(t=>
-    `${t.from} → ${t.to} : ${t.amount}`
+  document.getElementById("tradeLog").innerHTML = trades.map(t=>
+    `${t.from} → ${t.to} (${t.amount})`
   ).join("<br>");
 
-  document.getElementById("auctionLog").innerHTML=auctions.map(a=>
-    `🏷 ${a.item} | bid: ${a.bid}`
+  document.getElementById("auctionLog").innerHTML = auctions.map(a=>
+    `${a.item} | ${a.price}`
   ).join("<br>");
 
-  document.getElementById("tx").innerHTML=txLog.slice(-10).join("<br>");
+  document.getElementById("log").innerHTML = logs.slice(-8).join("<br>");
 }
 
 // CLICK
-clickBtn.onclick=()=>{score++;wallet++;update();};
+clickBtn.onclick = ()=>{
+  score++;
+  wallet++;
+  update();
+};
 
-// ITEM DROP
+// LOOT
 function dropItem(){
-  let item={name:"Sword",rarity:rarity(),stat:stat()};
+  let item = {
+    name: "Sword",
+    rarity: rarity()
+  };
   inventory.push(item);
-  log("Loot: "+item.name);
+  addLog("Loot: " + item.rarity);
   update();
 }
 
-// TRADING (anti-scam confirm)
-function sendTrade(){
-  let to=document.getElementById("tradeTo").value;
-  let amt=parseInt(document.getElementById("tradeAmount").value||"0");
+// TRADE (safe confirm)
+function trade(){
+  let to = document.getElementById("tradeTo").value;
+  let amt = parseInt(document.getElementById("tradeAmt").value || "0");
 
-  if(amt<=0||wallet<amt){alert("Invalid trade");return;}
+  if(!to || amt <= 0 || wallet < amt) return alert("Invalid trade");
 
-  if(confirm("Confirm trade to "+to+"?")){
-    wallet-=amt;
+  if(confirm("Send " + amt + " to " + to + "?")){
+    wallet -= amt;
     trades.push({from:name,to,amount:amt});
-    tx("Trade sent to "+to+" : -"+amt);
+    addLog("Trade sent");
   }
 
   update();
 }
 
-// AUCTION BIDDING
+// AUCTION
 function listItem(){
-  let item=document.getElementById("itemName").value;
-  let price=parseInt(document.getElementById("startPrice").value||"0");
-  auctions.push({item,bid:price});
-  tx("Listed item: "+item);
+  let item = document.getElementById("item").value;
+  let price = document.getElementById("price").value;
+
+  if(!item || price <= 0) return;
+
+  auctions.push({item,price});
+  addLog("Listed " + item);
   update();
 }
-
-// TX LOG
-function tx(m){txLog.push(new Date().toLocaleTimeString()+" - "+m);}
 
 // SAVE
 setInterval(()=>{
@@ -145,12 +222,18 @@ setInterval(()=>{
 },3000);
 
 function load(){
-  let d=JSON.parse(localStorage.getItem("save"));
-  if(d){score=d.score;wallet=d.wallet;name=d.name;inventory=d.inventory;}
+  let d = JSON.parse(localStorage.getItem("save"));
+  if(d){
+    score=d.score;
+    wallet=d.wallet;
+    name=d.name;
+    inventory=d.inventory || [];
+  }
   update();
 }
 
-load();update();
+load();
+update();
 </script>
 
 </body>
