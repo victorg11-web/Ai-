@@ -3,34 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Global Chat + Profiles</title>
+<title>Profile System (Offline)</title>
 
 <style>
-body {
+body{
   margin:0;
-  font-family: system-ui;
+  font-family:system-ui;
   background:#0b1220;
   color:white;
 }
 
-/* LOGIN */
-#login {
-  position:fixed;
-  inset:0;
+/* TOP BAR */
+header{
   display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#0f172a;
-}
-
-.box {
+  justify-content:space-between;
+  padding:12px;
   background:#111827;
-  padding:20px;
-  border-radius:12px;
-  width:320px;
+  position:sticky;
+  top:0;
 }
 
-input {
+.badge{
+  background:#4f46e5;
+  padding:3px 8px;
+  border-radius:6px;
+  font-size:12px;
+}
+
+/* LAYOUT */
+.container{padding:20px;}
+
+.card{
+  background:#111827;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:10px;
+}
+
+input,select{
   width:100%;
   padding:10px;
   margin:6px 0;
@@ -38,106 +48,54 @@ input {
   border:none;
 }
 
-button {
+button{
   width:100%;
   padding:10px;
-  margin-top:6px;
   border:none;
   border-radius:8px;
   cursor:pointer;
 }
 
-.primary { background:#2563eb; color:white; }
+.primary{background:#2563eb;color:white;}
 
-/* APP */
-#app { display:none; }
+/* PROFILE */
+.profile{display:none;}
 
-header {
-  display:flex;
-  justify-content:space-between;
-  padding:12px;
-  background:#111827;
-  align-items:center;
+.levelBar{
+  height:10px;
+  background:#1f2937;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.levelFill{
+  height:100%;
+  background:#22c55e;
+  width:0%;
 }
 
 /* CHAT */
-#chatBox {
-  height:420px;
-  overflow-y:auto;
+#chatBox{
+  height:250px;
+  overflow:auto;
   background:#1f2937;
   padding:10px;
-  border-radius:12px;
-}
-
-.msg {
-  display:flex;
-  gap:10px;
-  padding:8px;
-  margin:6px 0;
-  background:#111827;
   border-radius:10px;
 }
 
-.avatar {
-  width:32px;
-  height:32px;
-  border-radius:50%;
-  background:#2563eb;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:18px;
-}
-
-.meta {
-  font-size:12px;
-  color:#9ca3af;
-}
-
-.onlineDot {
-  width:10px;
-  height:10px;
-  background:lime;
-  border-radius:50%;
-  display:inline-block;
-  margin-left:6px;
-}
-
-/* INPUT */
-#msgInput {
-  width:80%;
-  padding:10px;
-  border-radius:8px;
-  border:none;
-}
-
-.sendBtn {
-  width:18%;
-}
-
-/* PROFILE BOX */
-.profileSetup {
-  position:fixed;
-  inset:0;
-  display:none;
-  justify-content:center;
-  align-items:center;
-  background:rgba(0,0,0,0.8);
-}
-
-.profileCard {
+.msg{
+  padding:6px;
+  margin:5px 0;
   background:#111827;
-  padding:20px;
-  border-radius:12px;
-  width:300px;
+  border-radius:8px;
 }
 
-.tag {
+.tag{
   font-size:11px;
+  background:#4f46e5;
   padding:2px 6px;
   border-radius:6px;
-  background:#4f46e5;
-  margin-left:6px;
+  margin-left:5px;
 }
 
 </style>
@@ -145,178 +103,180 @@ header {
 
 <body>
 
-<!-- LOGIN -->
-<div id="login">
-  <div class="box">
-    <h3>Login</h3>
-
-    <input id="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-
-    <button class="primary" onclick="login()">Login</button>
-    <button onclick="signup()">Signup</button>
-  </div>
-</div>
-
-<!-- PROFILE SETUP -->
-<div class="profileSetup" id="profileSetup">
-  <div class="profileCard">
-    <h3>Opret profil</h3>
-
-    <input id="username" placeholder="Username">
-    <input id="avatar" placeholder="Avatar emoji (fx 😎)">
-    
-    <button class="primary" onclick="saveProfile()">Gem profil</button>
-  </div>
-</div>
-
-<!-- APP -->
-<div id="app">
-
 <header>
-  <div>🌍 Global Chat</div>
-  <button onclick="logout()">Logout</button>
+  <div>Profile App</div>
+  <div>
+    <span id="topName">Guest</span>
+    <span class="badge">Lv <span id="topLevel">0</span></span>
+  </div>
 </header>
 
-<div style="padding:15px">
+<div class="container">
 
-<div id="chatBox"></div>
+<!-- LOGIN -->
+<div id="login">
+  <div class="card">
+    <h3>Login / Opret</h3>
 
-<br>
+    <input id="username" placeholder="Username">
+    <input id="avatar" placeholder="Avatar emoji (🙂)">
 
-<input id="msgInput" placeholder="Skriv besked...">
-<button class="primary sendBtn" onclick="sendMsg()">Send</button>
+    <button class="primary" onclick="login()">Enter</button>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="profile">
+
+  <div class="card">
+    <h3>Profil</h3>
+
+    <p>Navn: <span id="pName"></span></p>
+    <p>Avatar: <span id="pAvatar"></span></p>
+    <p>Tag: <span id="pTag"></span></p>
+
+    <div class="levelBar">
+      <div class="levelFill" id="levelFill"></div>
+    </div>
+
+    <p>Level: <span id="pLevel"></span></p>
+  </div>
+
+  <div class="card">
+    <h3>Chat Tags</h3>
+
+    <select id="tagSelect">
+      <option value="user">User</option>
+      <option value="pro">Pro (lvl 3)</option>
+      <option value="elite">Elite (lvl 5)</option>
+    </select>
+
+    <button class="primary" onclick="saveTag()">Gem Tag</button>
+  </div>
+
+  <div class="card">
+    <h3>Chat (local demo)</h3>
+
+    <div id="chatBox"></div>
+
+    <input id="msg" placeholder="Skriv besked">
+    <button class="primary" onclick="sendMsg()">Send</button>
+  </div>
 
 </div>
+
 </div>
 
-<script type="module">
+<script>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+/* ===== LOCAL PROFILE SYSTEM ===== */
 
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  doc,
-  setDoc,
-  getDoc,
-  onSnapshot,
-  query,
-  orderBy,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+let profile = JSON.parse(localStorage.getItem("profile")) || null;
 
-/* 🔥 FIREBASE CONFIG */
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-};
+/* LOGIN */
+function login(){
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+  if(!username.value) return alert("skriv username");
 
-/* AUTH */
-window.signup = () => {
-  createUserWithEmailAndPassword(auth, email.value, password.value)
-    .catch(e => alert(e.message));
-};
+  if(!profile){
+    profile = {
+      name: username.value,
+      avatar: avatar.value || "🙂",
+      level: 1,
+      xp: 0,
+      tag: "user",
+      messages: []
+    };
+  }
 
-window.login = () => {
-  signInWithEmailAndPassword(auth, email.value, password.value)
-    .catch(e => alert(e.message));
-};
+  save();
+  show();
+}
 
-window.logout = () => signOut(auth);
+/* SAVE */
+function save(){
+  localStorage.setItem("profile", JSON.stringify(profile));
+}
 
-/* PROFILE SAVE */
-window.saveProfile = async function(){
-  let user = auth.currentUser;
+/* SHOW UI */
+function show(){
 
-  await setDoc(doc(db,"profiles",user.uid), {
-    username: username.value,
-    avatar: avatar.value || "🙂",
-    tag: "user",
-    online: true
+  login.style.display="none";
+  profileEl.style.display="block";
+
+  pName.innerText = profile.name;
+  pAvatar.innerText = profile.avatar;
+  pTag.innerHTML = `<span class="tag">${profile.tag}</span>`;
+  pLevel.innerText = profile.level;
+
+  topName.innerText = profile.name;
+  topLevel.innerText = profile.level;
+
+  levelFill.style.width = (profile.xp % 100) + "%";
+
+  renderChat();
+}
+
+/* TAG SYSTEM */
+function saveTag(){
+
+  if(tagSelect.value=="pro" && profile.level < 3){
+    alert("Locked level 3");
+    return;
+  }
+
+  if(tagSelect.value=="elite" && profile.level < 5){
+    alert("Locked level 5");
+    return;
+  }
+
+  profile.tag = tagSelect.value;
+  save();
+  show();
+}
+
+/* CHAT */
+function sendMsg(){
+
+  if(!msg.value) return;
+
+  profile.messages.push({
+    text: msg.value,
+    name: profile.name,
+    avatar: profile.avatar,
+    tag: profile.tag
   });
 
-  profileSetup.style.display="none";
-};
+  profile.xp += 10;
+  profile.level = Math.floor(profile.xp / 100) + 1;
 
-/* SEND MESSAGE */
-window.sendMsg = async function(){
-  let user = auth.currentUser;
-  if(!user) return;
+  save();
+  renderChat();
+  show();
 
-  let prof = await getDoc(doc(db,"profiles",user.uid));
+  msg.value="";
+}
 
-  if(!msgInput.value) return;
+function renderChat(){
 
-  await addDoc(collection(db,"messages"), {
-    text: msgInput.value,
-    uid: user.uid,
-    username: prof.data().username,
-    avatar: prof.data().avatar,
-    tag: prof.data().tag,
-    time: serverTimestamp()
-  });
-
-  msgInput.value="";
-};
-
-/* REALTIME CHAT */
-const q = query(collection(db,"messages"), orderBy("time"));
-
-onSnapshot(q, snap=>{
   chatBox.innerHTML="";
 
-  snap.forEach(d=>{
-    let m = d.data();
-
+  profile.messages.forEach(m=>{
     chatBox.innerHTML += `
       <div class="msg">
-        <div class="avatar">${m.avatar}</div>
-
-        <div>
-          <b>${m.username}
-            <span class="tag">${m.tag}</span>
-            <span class="onlineDot"></span>
-          </b>
-          <div>${m.text}</div>
-        </div>
+        ${m.avatar} <b>${m.name}</b>
+        <span class="tag">${m.tag}</span><br>
+        ${m.text}
       </div>
     `;
   });
 
-  chatBox.scrollTop = chatBox.scrollHeight;
-});
+}
 
-/* AUTH STATE */
-onAuthStateChanged(auth, async user => {
-  if(user){
-    login.style.display="none";
-    app.style.display="block";
-
-    let profRef = doc(db,"profiles",user.uid);
-    let profSnap = await getDoc(profRef);
-
-    if(!profSnap.exists()){
-      profileSetup.style.display="flex";
-    }
-  } else {
-    login.style.display="flex";
-    app.style.display="none";
-  }
-});
+/* INIT */
+if(profile){
+  show();
+}
 
 </script>
 
