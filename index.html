@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Workspace</title>
+<title>Global Chat</title>
 
 <style>
 body {
   margin:0;
   font-family: system-ui;
-  background:#f5f6f8;
-  color:#111;
+  background:#0f172a;
+  color:white;
 }
 
 /* LOGIN */
@@ -20,92 +20,68 @@ body {
   display:flex;
   justify-content:center;
   align-items:center;
-  background:#0f172a;
+  background:#0b1220;
 }
 
 .box {
-  background:white;
+  background:#111827;
   padding:20px;
-  border-radius:14px;
+  border-radius:12px;
   width:300px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.2);
 }
 
 input {
   width:100%;
   padding:10px;
   margin:6px 0;
-  border-radius:10px;
-  border:1px solid #ddd;
+  border:none;
+  border-radius:8px;
 }
 
 button {
   width:100%;
   padding:10px;
-  margin-top:8px;
+  margin-top:6px;
   border:none;
-  border-radius:10px;
+  border-radius:8px;
   cursor:pointer;
 }
 
 .primary { background:#2563eb; color:white; }
-.danger { background:#ef4444; color:white; }
 
 /* APP */
-.hidden { display:none; }
+#app { display:none; }
 
 header {
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  padding:14px 20px;
-  background:white;
-  border-bottom:1px solid #e5e7eb;
+  padding:12px;
+  background:#111827;
 }
 
 .container {
-  display:grid;
-  grid-template-columns: 240px 1fr;
-  min-height:calc(100vh - 60px);
-}
-
-/* SIDEBAR */
-.sidebar {
-  background:white;
-  border-right:1px solid #e5e7eb;
   padding:15px;
 }
 
-.sidebar button {
-  width:100%;
-  margin-bottom:8px;
-  background:#f3f4f6;
-  color:#111;
-}
-
-/* MAIN */
-.main {
-  padding:20px;
-}
-
-/* CARDS */
-.card {
-  background:white;
-  padding:15px;
+/* CHAT */
+#chatBox {
+  height:400px;
+  overflow-y:auto;
+  background:#1f2937;
+  padding:10px;
   border-radius:12px;
-  border:1px solid #e5e7eb;
   margin-bottom:10px;
 }
 
-/* POSTS */
-textarea {
-  width:100%;
-  height:80px;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  resize:none;
+.msg {
+  padding:6px;
+  margin:4px 0;
+  background:#111827;
+  border-radius:8px;
 }
+
+small { color:#9ca3af; }
+
 </style>
 </head>
 
@@ -114,64 +90,33 @@ textarea {
 <!-- LOGIN -->
 <div id="login">
   <div class="box">
-    <h2>Login</h2>
+    <h3>Global Chat Login</h3>
+
     <input id="email" placeholder="Email">
     <input id="password" type="password" placeholder="Password">
 
     <button class="primary" onclick="login()">Login</button>
-    <button onclick="signup()">Opret bruger</button>
+    <button onclick="signup()">Signup</button>
   </div>
 </div>
 
 <!-- APP -->
-<div id="app" class="hidden">
+<div id="app">
 
 <header>
-  <h3>Workspace</h3>
-  <button class="danger" onclick="logout()">Logout</button>
+  <div>🌍 Global Chat</div>
+  <button onclick="logout()">Logout</button>
 </header>
 
 <div class="container">
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <button onclick="view('home')">Home</button>
-    <button onclick="view('profile')">Profile</button>
-    <button onclick="view('feed')">Feed</button>
-  </div>
+  <div id="chatBox"></div>
 
-  <!-- MAIN -->
-  <div class="main">
-
-    <div id="home">
-      <div class="card">
-        <h2>Velkommen 👋</h2>
-        <p id="userInfo"></p>
-      </div>
-    </div>
-
-    <div id="profile" class="hidden">
-      <div class="card">
-        <h3>Profil</h3>
-        <p>Din konto er aktiv i systemet.</p>
-      </div>
-    </div>
-
-    <div id="feed" class="hidden">
-
-      <div class="card">
-        <h3>Ny post</h3>
-        <textarea id="postText" placeholder="Skriv noget..."></textarea>
-        <button class="primary" onclick="addPost()">Post</button>
-      </div>
-
-      <div id="posts"></div>
-
-    </div>
-
-  </div>
+  <input id="msgInput" placeholder="Skriv besked...">
+  <button onclick="sendMsg()" class="primary">Send</button>
 
 </div>
+
 </div>
 
 <script type="module">
@@ -185,18 +130,28 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-/* 🔥 Firebase config */
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_DOMAIN",
-  projectId: "YOUR_PROJECT",
-  appId: "YOUR_APP"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-/* LOGIN */
+/* AUTH */
 window.signup = () => {
   createUserWithEmailAndPassword(auth, email.value, password.value)
     .catch(e => alert(e.message));
@@ -209,43 +164,52 @@ window.login = () => {
 
 window.logout = () => signOut(auth);
 
-/* STATE */
+/* CHAT SEND */
+window.sendMsg = async function(){
+  let user = auth.currentUser;
+  if(!user) return;
+
+  if(!msgInput.value) return;
+
+  await addDoc(collection(db,"messages"), {
+    text: msgInput.value,
+    user: user.email,
+    time: serverTimestamp()
+  });
+
+  msgInput.value = "";
+};
+
+/* REALTIME CHAT */
+const q = query(collection(db,"messages"), orderBy("time"));
+
+onSnapshot(q, (snap)=>{
+  chatBox.innerHTML = "";
+
+  snap.forEach(doc=>{
+    let d = doc.data();
+
+    chatBox.innerHTML += `
+      <div class="msg">
+        <b>${d.user}</b><br>
+        ${d.text}
+      </div>
+    `;
+  });
+
+  chatBox.scrollTop = chatBox.scrollHeight;
+});
+
+/* LOGIN STATE */
 onAuthStateChanged(auth, user => {
   if(user){
     login.style.display="none";
-    appDiv.classList.remove("hidden");
-
-    userInfo.innerText = "Logget ind som: " + user.email;
+    app.style.display="block";
   } else {
     login.style.display="flex";
-    appDiv.classList.add("hidden");
+    app.style.display="none";
   }
 });
-
-const appDiv = document.getElementById("app");
-
-</script>
-
-<script>
-
-/* NAV */
-function view(id){
-  document.querySelectorAll(".main > div").forEach(d=>d.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-}
-
-/* POSTS (local only simple demo) */
-function addPost(){
-  let text = postText.value;
-  if(!text) return;
-
-  let div = document.createElement("div");
-  div.className="card";
-  div.innerText = text;
-
-  posts.prepend(div);
-  postText.value="";
-}
 
 </script>
 
