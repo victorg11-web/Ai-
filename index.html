@@ -1,112 +1,86 @@
-<!DOCTYPE html>
-<html lang="da">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Chat</title>
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { motion } from "framer-motion";
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0d1117;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+export default function ChatApp() {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [typing, setTyping] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("chat");
+    if (saved) setMessages(JSON.parse(saved));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("chat", JSON.stringify(messages));
+  }, [messages]);
+
+  const sendMessage = async () => {
+    if (!input.trim()) return;
+
+    const userMessage = { role: "user", text: input };
+    const updated = [...messages, userMessage];
+    setMessages(updated);
+    setInput("");
+
+    setTyping(true);
+
+    // Fake AI response (replace with API later)
+    setTimeout(() => {
+      const aiMessage = {
+        role: "ai",
+        text: generateResponse(input)
+      };
+      setMessages(prev => [...prev, aiMessage]);
+      setTyping(false);
+    }, 800);
+  };
+
+  const generateResponse = (text) => {
+    return "Jeg forstår: " + text;
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center p-4">
+      <Card className="w-full max-w-2xl bg-gray-900 border-gray-800">
+        <CardContent className="p-4 flex flex-col h-[80vh]">
+          <div className="flex-1 overflow-y-auto space-y-3 p-2">
+            {messages.map((msg, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`p-3 rounded-xl max-w-[80%] ${
+                  msg.role === "user"
+                    ? "ml-auto bg-blue-600"
+                    : "mr-auto bg-gray-700"
+                }`}
+              >
+                {msg.text}
+              </motion.div>
+            ))}
+
+            {typing && (
+              <div className="text-gray-400 text-sm">AI skriver...</div>
+            )}
+          </div>
+
+          <div className="flex gap-2 mt-3">
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Skriv noget..."
+              className="bg-gray-800 border-gray-700"
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            />
+            <Button onClick={sendMessage}>Send</Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
-header {
-  padding: 15px;
-  background: #161b22;
-  border-bottom: 1px solid #30363d;
-  text-align: center;
-  font-weight: bold;
-}
-
-#chat {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.message {
-  max-width: 70%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 10px;
-}
-
-.user {
-  background: #238636;
-  align-self: flex-end;
-}
-
-.ai {
-  background: #30363d;
-  align-self: flex-start;
-}
-
-#inputArea {
-  display: flex;
-  border-top: 1px solid #30363d;
-}
-
-input {
-  flex: 1;
-  padding: 15px;
-  border: none;
-  outline: none;
-  background: #0d1117;
-  color: white;
-}
-
-button {
-  padding: 15px;
-  border: none;
-  background: #238636;
-  color: white;
-  cursor: pointer;
-}
-</style>
-</head>
-
-<body>
-
-<header>🤖 Min AI</header>
-
-<div id="chat"></div>
-
-<div id="inputArea">
-  <input id="input" placeholder="Skriv noget..." />
-  <button onclick="sendMessage()">Send</button>
-</div>
-
-<script>
-function addMessage(text, type) {
-  const chat = document.getElementById("chat");
-  const msg = document.createElement("div");
-  msg.className = "message " + type;
-  msg.innerText = text;
-  chat.appendChild(msg);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function sendMessage() {
-  const input = document.getElementById("input");
-  const text = input.value;
-
-  if (!text) return;
-
-  addMessage(text, "user");
-  input.value = "";
-
-  // Fake AI svar (vi kobler rigtig AI på bagefter)
-  setTimeout(() => {
-    addMessage("Jeg er en AI 🤖 (demo svar)", "ai");
-  }, 500);
-}
-</script>
-
-</body>
-</html>
