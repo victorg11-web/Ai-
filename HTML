@@ -1,38 +1,112 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8">
-  <title>Testside</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #0d1117;
-      color: #fff;
-      padding: 50px;
-    }
-    h1 {
-      color: #58a6ff;
-    }
-    .box {
-      margin-top: 30px;
-      padding: 20px;
-      border: 1px solid #30363d;
-      border-radius: 10px;
-      display: inline-block;
-      background: #161b22;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Chat</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0d1117;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+header {
+  padding: 15px;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  text-align: center;
+  font-weight: bold;
+}
+
+#chat {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.message {
+  max-width: 70%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+}
+
+.user {
+  background: #238636;
+  align-self: flex-end;
+}
+
+.ai {
+  background: #30363d;
+  align-self: flex-start;
+}
+
+#inputArea {
+  display: flex;
+  border-top: 1px solid #30363d;
+}
+
+input {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  outline: none;
+  background: #0d1117;
+  color: white;
+}
+
+button {
+  padding: 15px;
+  border: none;
+  background: #238636;
+  color: white;
+  cursor: pointer;
+}
+</style>
 </head>
+
 <body>
 
-  <h1>✅ Det virker!</h1>
-  <p>Din GitHub Pages side kører korrekt.</p>
+<header>🤖 Min AI</header>
 
-  <div class="box">
-    <p>Hvis du kan se denne side online, så er alt sat rigtigt op 🎉</p>
-  </div>
+<div id="chat"></div>
+
+<div id="inputArea">
+  <input id="input" placeholder="Skriv noget..." />
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+function addMessage(text, type) {
+  const chat = document.getElementById("chat");
+  const msg = document.createElement("div");
+  msg.className = "message " + type;
+  msg.innerText = text;
+  chat.appendChild(msg);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function sendMessage() {
+  const input = document.getElementById("input");
+  const text = input.value;
+
+  if (!text) return;
+
+  addMessage(text, "user");
+  input.value = "";
+
+  // Fake AI svar (vi kobler rigtig AI på bagefter)
+  setTimeout(() => {
+    addMessage("Jeg er en AI 🤖 (demo svar)", "ai");
+  }, 500);
+}
+</script>
 
 </body>
 </html>
