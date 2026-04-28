@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat Tags System</title>
+<title>Chat + Levels + Tags</title>
 
 <style>
 body{
@@ -13,7 +13,6 @@ body{
   color:white;
 }
 
-/* HEADER */
 header{
   display:flex;
   justify-content:space-between;
@@ -57,7 +56,7 @@ header{
 }
 
 /* INPUT */
-input{
+input,select{
   width:80%;
   padding:10px;
   border:none;
@@ -73,7 +72,7 @@ button.send{
   color:white;
 }
 
-/* TAGS */
+/* TAG */
 .tag{
   font-size:11px;
   padding:2px 6px;
@@ -81,17 +80,31 @@ button.send{
   background:#4f46e5;
   margin-left:5px;
 }
+
+/* LEVEL BAR */
+.bar{
+  height:10px;
+  background:#1f2937;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.fill{
+  height:100%;
+  background:#22c55e;
+  width:0%;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-  <div>Chat System</div>
+  <div>Social Chat</div>
 
   <div class="menu">
-    <button onclick="showMenu('chat')">Chat</button>
-    <button onclick="showMenu('profile')">Menu</button>
+    <button onclick="show('chat')">Chat</button>
+    <button onclick="show('profile')">Profil</button>
   </div>
 </header>
 
@@ -101,7 +114,7 @@ button.send{
 <div id="chatPage">
 
   <div class="card">
-    <h3>Global Chat</h3>
+    <h3>Chat</h3>
 
     <div id="chatBox"></div>
 
@@ -113,15 +126,34 @@ button.send{
 
 </div>
 
-<!-- MENU -->
+<!-- PROFILE -->
 <div id="profilePage" style="display:none">
 
   <div class="card">
     <h3>Profil</h3>
 
-    <p>Username: <b id="name"></b></p>
-    <p>Messages: <b id="count"></b></p>
-    <p>Tag: <span class="tag" id="tag"></span></p>
+    <p>Navn: <b id="pName"></b></p>
+    <p>Level: <b id="pLevel"></b></p>
+    <p>XP: <b id="pXP"></b></p>
+
+    <div class="bar">
+      <div class="fill" id="barFill"></div>
+    </div>
+
+    <p>Aktuel Tag: <span class="tag" id="pTag"></span></p>
+  </div>
+
+  <div class="card">
+    <h3>Vælg Tag</h3>
+
+    <select id="tagSelect">
+      <option value="Noob">Noob (0 lvl)</option>
+      <option value="Rookie">Rookie (lvl 2)</option>
+      <option value="Pro">Pro (lvl 4)</option>
+      <option value="Elite">Elite (lvl 6)</option>
+    </select>
+
+    <button class="send" onclick="setTag()">Gem</button>
   </div>
 
 </div>
@@ -130,40 +162,60 @@ button.send{
 
 <script>
 
-/* ===== USER STATE ===== */
+/* ===== USER ===== */
 let user = {
-  name: "Guest",
-  messages: 0
+  name: prompt("Username?") || "Guest",
+  xp: 0,
+  level: 1,
+  tag: "Noob"
 };
 
 let chat = [];
 
-/* INIT USER */
-user.name = prompt("Skriv username") || "Guest";
-
-/* TAG SYSTEM */
-function getTag(count){
-
-  if(count < 100) return "Noob";
-  if(count < 200) return "Rookie";
-  if(count < 400) return "Pro";
-  return "Elite";
+/* LEVEL SYSTEM */
+function calcLevel(xp){
+  return Math.floor(xp / 100) + 1;
 }
 
-/* SEND MESSAGE */
+/* TAG UNLOCKS */
+function canUseTag(tag, level){
+
+  if(tag==="Rookie" && level<2) return false;
+  if(tag==="Pro" && level<4) return false;
+  if(tag==="Elite" && level<6) return false;
+
+  return true;
+}
+
+/* SEND MSG */
 function sendMsg(){
 
   if(!msg.value) return;
 
-  user.messages++;
+  user.xp += 10;
+  user.level = calcLevel(user.xp);
 
   chat.push({
-    name: user.name,
-    text: msg.value,
-    tag: getTag(user.messages)
+    name:user.name,
+    text:msg.value,
+    tag:user.tag
   });
 
   msg.value="";
+  render();
+}
+
+/* SET TAG */
+function setTag(){
+
+  let t = tagSelect.value;
+
+  if(!canUseTag(t,user.level)){
+    alert("Tag locked! Level up først");
+    return;
+  }
+
+  user.tag = t;
   render();
 }
 
@@ -185,16 +237,19 @@ function render(){
   updateProfile();
 }
 
-/* PROFILE UPDATE */
+/* PROFILE */
 function updateProfile(){
 
-  name.innerText = user.name;
-  count.innerText = user.messages;
-  tag.innerText = getTag(user.messages);
+  pName.innerText = user.name;
+  pLevel.innerText = user.level;
+  pXP.innerText = user.xp;
+  pTag.innerText = user.tag;
+
+  barFill.style.width = (user.xp % 100) + "%";
 }
 
 /* MENU */
-function showMenu(page){
+function show(page){
 
   chatPage.style.display = page==="chat" ? "block" : "none";
   profilePage.style.display = page==="profile" ? "block" : "none";
