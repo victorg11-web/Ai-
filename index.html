@@ -3,149 +3,153 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>FortTube</title>
+<title>MiniTube Ultimate</title>
 <style>
+:root{
+  --bg:#0f0f0f;
+  --card:#1f1f1f;
+  --text:white;
+}
+
+body.light{
+  --bg:#f5f5f5;
+  --card:white;
+  --text:black;
+}
+
 body{
   margin:0;
   font-family:Arial;
-  background:#0f0f0f;
-  color:white;
+  background:var(--bg);
+  color:var(--text);
 }
 
 header{
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  padding:10px 20px;
+  align-items:center;
+  padding:10px;
   background:#181818;
   position:sticky;
   top:0;
 }
 
-.logo{
-  font-weight:bold;
-  font-size:20px;
-  color:red;
-}
+.logo{color:red;font-weight:bold;font-size:20px;}
 
-.search{
-  width:40%;
-  padding:8px;
-  border-radius:20px;
-  border:none;
-}
+.search{width:40%;padding:8px;border-radius:20px;border:none;}
 
-.container{
-  display:flex;
-}
+.container{display:flex;}
 
-.sidebar{
-  width:200px;
-  background:#121212;
-  height:100vh;
-  padding:10px;
-}
+.sidebar{width:200px;padding:10px;background:#121212;min-height:100vh;}
 
 .video-grid{
   flex:1;
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:15px;
-  padding:15px;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:10px;
+  padding:10px;
 }
 
 .card{
-  background:#1f1f1f;
+  background:var(--card);
   border-radius:10px;
-  cursor:pointer;
-  overflow:hidden;
-  transition:0.2s;
-}
-
-.card:hover{
-  transform:scale(1.03);
-}
-
-.thumb{
-  height:140px;
-  background:#333;
-}
-
-.title{
   padding:10px;
-  font-size:14px;
-}
-
-.player{
-  display:none;
-  padding:20px;
-}
-
-iframe{
-  width:100%;
-  height:400px;
-  border:none;
-}
-
-.back{
-  margin-bottom:10px;
-  padding:8px 12px;
-  border:none;
-  background:red;
-  color:white;
-  border-radius:5px;
   cursor:pointer;
 }
+
+.thumb{height:120px;background:#333;border-radius:8px;}
+
+.player{display:none;padding:10px;}
+
+iframe{width:100%;height:400px;}
+
+.likebar button{margin:5px}
+
+.comment{font-size:12px;opacity:0.8}
+
+.feed{
+  display:none;
+  height:100vh;
+  overflow-y:scroll;
+  scroll-snap-type:y mandatory;
+}
+
+.feedVideo{
+  height:100vh;
+  scroll-snap-align:start;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+}
+
+.feedVideo iframe{height:60vh;width:90%;}
+
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">▶ MiniTube</div>
-  <input class="search" placeholder="Search videos..." oninput="filterVideos(this.value)" />
+<div class="logo">▶ MiniTube</div>
+<input class="search" placeholder="Search..." oninput="search(this.value)" />
+<button onclick="toggleTheme()">🌙</button>
+<button onclick="toggleFeed()">📱</button>
 </header>
 
 <div class="container">
-
 <div class="sidebar">
-  <p>🏠 Home</p>
-  <p>🔥 Trending</p>
-  <p>🎮 Gaming</p>
-  <p>🎵 Music</p>
+<p onclick="filter('all')">Home</p>
+<p onclick="filter('gaming')">Gaming</p>
+<p onclick="filter('music')">Music</p>
+<p onclick="filter('tech')">Tech</p>
 </div>
 
 <div id="grid" class="video-grid"></div>
-
 </div>
 
+<div id="feed" class="feed"></div>
+
 <div id="player" class="player">
-  <button class="back" onclick="back()">⬅ Back</button>
-  <iframe id="frame"></iframe>
+<button onclick="back()">⬅ Back</button>
+<iframe id="frame"></iframe>
+<div class="likebar">
+<button onclick="like()">👍</button>
+<button onclick="dislike()">👎</button>
+<span id="likes">0</span>
+</div>
+<div>
+<input id="commentInput" placeholder="Comment" />
+<button onclick="addComment()">Send</button>
+<div id="comments"></div>
+</div>
 </div>
 
 <script>
 
-const videos=[
-  {title:"Funny Cats Compilation",id:"J---aiyznGQ"},
-  {title:"Gaming Highlights 2026",id:"dQw4w9WgXcQ"},
-  {title:"Relaxing Music",id:"5qap5aO4i9A"},
-  {title:"Tech Reviews",id:"M7lc1UVf-VE"},
-  {title:"Top 10 Moments",id:"e-ORhEE9VVg"}
+let videos=[
+  {id:"dQw4w9WgXcQ",title:"Gaming Highlights",cat:"gaming",likes:0,dislikes:0,comments:[]},
+  {id:"M7lc1UVf-VE",title:"Tech Review",cat:"tech",likes:0,dislikes:0,comments:[]},
+  {id:"5qap5aO4i9A",title:"Music Chill",cat:"music",likes:0,dislikes:0,comments:[]}
 ];
 
-function render(list){
+let current=null;
+let subs=[];
+
+function render(list=videos){
   document.getElementById("grid").innerHTML=list.map(v=>`
-    <div class="card" onclick="play('${v.id}')">
+    <div class="card" onclick="openVideo('${v.id}')">
       <div class="thumb"></div>
-      <div class="title">${v.title}</div>
+      <b>${v.title}</b>
     </div>
   `).join("");
 }
 
-function play(id){
+function openVideo(id){
+  current=videos.find(v=>v.id===id);
   document.querySelector(".container").style.display="none";
   document.getElementById("player").style.display="block";
   document.getElementById("frame").src="https://www.youtube.com/embed/"+id;
+  updateUI();
 }
 
 function back(){
@@ -153,11 +157,53 @@ function back(){
   document.getElementById("player").style.display="none";
 }
 
-function filterVideos(q){
+function like(){current.likes++;updateUI();}
+function dislike(){current.dislikes++;updateUI();}
+
+function updateUI(){
+  document.getElementById("likes").innerText=current.likes+" 👍 / "+current.dislikes+" 👎";
+  document.getElementById("comments").innerHTML=current.comments.map(c=>"💬 "+c).join("<br>");
+}
+
+function addComment(){
+  let c=document.getElementById("commentInput").value;
+  current.comments.push(c);
+  updateUI();
+}
+
+function search(q){
   render(videos.filter(v=>v.title.toLowerCase().includes(q.toLowerCase())));
 }
 
-render(videos);
+function filter(cat){
+  if(cat=="all") render();
+  else render(videos.filter(v=>v.cat==cat));
+}
+
+function toggleTheme(){document.body.classList.toggle("light");}
+
+function toggleFeed(){
+  let f=document.getElementById("feed");
+  if(f.style.display=="block"){
+    f.style.display="none";
+    document.querySelector(".container").style.display="flex";
+  }else{
+    document.querySelector(".container").style.display="none";
+    f.style.display="block";
+    renderFeed();
+  }
+}
+
+function renderFeed(){
+  document.getElementById("feed").innerHTML=videos.map(v=>`
+    <div class="feedVideo">
+      <iframe src="https://www.youtube.com/embed/${v.id}"></iframe>
+      <b>${v.title}</b>
+    </div>
+  `).join("");
+}
+
+render();
 
 </script>
 
