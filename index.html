@@ -3,110 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arcade Hub</title>
+<title>Game Hub</title>
 
 <style>
 body {
-  margin: 0;
-  font-family: system-ui, Arial;
-  background: #f4f6f8;
-  color: #1f2937;
+  margin:0;
+  font-family: system-ui;
+  background:#0b1220;
+  color:white;
 }
 
-/* HEADER */
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 20px;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-  position: sticky;
-  top: 0;
-}
-
-nav button {
-  background: #f3f4f6;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-nav button:hover {
-  background: #e5e7eb;
-}
-
-/* LAYOUT */
-section {
-  display: none;
-  padding: 20px;
-}
-
-.active {
-  display: block;
-}
-
-/* CARDS */
-.card {
-  background: white;
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-/* CANVAS */
-canvas.game {
-  display: block;
-  margin: 10px auto;
-  background: white;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-}
-
-/* CHAT */
-#chatBox {
-  height: 220px;
-  overflow-y: auto;
-  padding: 10px;
-  background: #f9fafb;
-  border-radius: 12px;
-  margin-bottom: 10px;
-}
-
-/* LOGIN MODAL */
-#loginBox {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
+/* LOGIN */
+#loginScreen {
+  position:fixed;
+  inset:0;
   display:flex;
   justify-content:center;
   align-items:center;
-  z-index:999;
+  background: radial-gradient(circle at top, #1e293b, #0b1220);
 }
 
-.loginCard {
-  background:white;
+.card {
+  background:rgba(255,255,255,0.05);
   padding:20px;
-  border-radius:12px;
-  width:280px;
+  border-radius:16px;
+  width:300px;
+  backdrop-filter: blur(10px);
 }
 
 input {
-  width: 70%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border-radius:10px;
+  border:none;
 }
 
 button {
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  background: #111827;
-  color: white;
-  cursor: pointer;
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.primary { background:#4f46e5; color:white; }
+.danger { background:#ef4444; color:white; }
+
+/* APP */
+.hidden { display:none; }
+
+header {
+  display:flex;
+  justify-content:space-between;
+  padding:15px;
+  background:#111827;
+  align-items:center;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap:15px;
+  padding:20px;
+}
+
+.tile {
+  background:#1f2937;
+  padding:20px;
+  border-radius:16px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.tile:hover {
+  transform:scale(1.05);
+}
+
+/* MODALS / GAMES */
+.screen {
+  padding:20px;
+}
+
+canvas {
+  background:white;
+  border-radius:10px;
+  display:block;
+  margin:auto;
 }
 </style>
 </head>
@@ -114,204 +98,146 @@ button {
 <body>
 
 <!-- LOGIN -->
-<div id="loginBox">
-  <div class="loginCard">
-    <h3>Login / Signup</h3>
-    <input id="user" placeholder="Brugernavn"><br><br>
-    <input id="pass" type="password" placeholder="Kodeord"><br><br>
+<div id="loginScreen">
+  <div class="card">
+    <h2>Login</h2>
 
-    <button onclick="login()">Login</button>
-    <button onclick="signup()">Opret</button>
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+
+    <button class="primary" onclick="login()">Login</button>
+    <button onclick="signup()">Signup</button>
   </div>
 </div>
 
-<header>
-  <h3>🎮 Arcade Hub</h3>
+<!-- APP -->
+<div id="app" class="hidden">
 
-  <nav>
-    <button onclick="show('home')">Home</button>
-    <button onclick="show('snake')">Snake</button>
-    <button onclick="show('pong')">Pong</button>
-    <button onclick="show('chat')">AI</button>
-    <button onclick="logout()">Logout</button>
-  </nav>
+<header>
+  <h3>🎮 Game Hub</h3>
+  <button class="danger" onclick="logout()">Logout</button>
 </header>
 
-<!-- HOME -->
-<section id="home" class="active">
-  <div class="card">
-    <h2>Velkommen 👋</h2>
-    <p id="welcome"></p>
-  </div>
+<div class="grid">
 
-  <div class="card">
-    <h3>🏆 Achievements</h3>
-    <div id="achievements"></div>
-  </div>
-</section>
+  <div class="tile" onclick="showGame('snake')">🐍 Snake</div>
+  <div class="tile" onclick="showGame('pong')">🏓 Pong</div>
+  <div class="tile" onclick="showGame('profile')">👤 Profile</div>
+
+</div>
 
 <!-- SNAKE -->
-<section id="snake">
-  <div class="card">
-    <h2>Snake</h2>
-    <p>Score: <span id="score">0</span></p>
-    <canvas id="snakeCanvas" width="300" height="300" class="game"></canvas>
-  </div>
-</section>
+<div id="snake" class="screen hidden">
+  <h2>Snake</h2>
+  <p>Score: <span id="score">0</span></p>
+  <canvas id="snakeCanvas" width="300" height="300"></canvas>
+</div>
 
 <!-- PONG -->
-<section id="pong">
-  <div class="card">
-    <h2>Pong</h2>
-    <canvas id="pongCanvas" width="300" height="300" class="game"></canvas>
-  </div>
-</section>
+<div id="pong" class="screen hidden">
+  <h2>Pong</h2>
+  <canvas id="pongCanvas" width="300" height="300"></canvas>
+</div>
 
-<!-- CHAT -->
-<section id="chat">
-  <div class="card">
-    <h2>AI Chat</h2>
-    <div id="chatBox"></div>
-    <input id="input" placeholder="Skriv..." />
-    <button onclick="sendMsg()">Send</button>
-  </div>
-</section>
+<!-- PROFILE -->
+<div id="profile" class="screen hidden">
+  <h2>Profile</h2>
+  <p id="userInfo"></p>
+</div>
+
+</div>
+
+<script type="module">
+
+/* ================= FIREBASE ================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+/* 🔥 PUT YOUR CONFIG HERE */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_PROJECT",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+/* ================= AUTH ================= */
+
+window.signup = () => {
+  createUserWithEmailAndPassword(auth, email.value, password.value)
+    .catch(e => alert(e.message));
+};
+
+window.login = () => {
+  signInWithEmailAndPassword(auth, email.value, password.value)
+    .catch(e => alert(e.message));
+};
+
+window.logout = () => signOut(auth);
+
+onAuthStateChanged(auth, user => {
+  if(user){
+    loginScreen.classList.add("hidden");
+    app.classList.remove("hidden");
+
+    userInfo.innerText = "Logged in: " + user.email;
+  } else {
+    loginScreen.classList.remove("hidden");
+    app.classList.add("hidden");
+  }
+});
+
+</script>
 
 <script>
 
-/* ================= LOGIN ================= */
-
-let currentUser = null;
-
-function signup(){
-  let u=user.value;
-  let p=pass.value;
-
-  let users = JSON.parse(localStorage.getItem("users")||"{}");
-
-  if(users[u]) return alert("Bruger findes allerede");
-
-  users[u]=p;
-  localStorage.setItem("users",JSON.stringify(users));
-
-  alert("Bruger oprettet!");
-}
-
-function login(){
-  let u=user.value;
-  let p=pass.value;
-
-  let users = JSON.parse(localStorage.getItem("users")||"{}");
-
-  if(users[u] && users[u]===p){
-    currentUser=u;
-    localStorage.setItem("session",u);
-
-    loginBox.style.display="none";
-    welcome.innerText="Logget ind som "+u;
-
-  } else alert("Forkert login");
-}
-
-function logout(){
-  localStorage.removeItem("session");
-  location.reload();
-}
-
-/* AUTO LOGIN */
-let session = localStorage.getItem("session");
-if(session){
-  currentUser=session;
-  loginBox.style.display="none";
-  welcome.innerText="Logget ind som "+session;
-}
-
-/* BLOCK */
-function requireLogin(){
-  if(!currentUser){
-    alert("Login først!");
-    return false;
-  }
-  return true;
-}
-
-/* NAV */
-function show(id){
-  if(!requireLogin()) return;
-
-  document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
-
-/* ================= ACHIEVEMENTS ================= */
-
-let ach = JSON.parse(localStorage.getItem("ach")||"[]");
-
-function addAch(t){
-  if(!ach.includes(t)){
-    ach.push(t);
-    localStorage.setItem("ach",JSON.stringify(ach));
-    renderAch();
-  }
-}
-
-function renderAch(){
-  achievements.innerHTML = ach.map(a=>"🏆 "+a).join("<br>");
-}
-renderAch();
-
-/* ================= CHAT ================= */
-
-function sendMsg(){
-  if(!requireLogin()) return;
-
-  let i=input;
-  let box=chatBox;
-
-  box.innerHTML+=`<div><b>Du:</b> ${i.value}</div>`;
-
-  let r="🤖 ...";
-  if(i.value.includes("hej")) r="Hej!";
-  if(i.value.includes("snake")) r="Snake er klar";
-  if(i.value.includes("pong")) r="Pong aktiv";
-
-  box.innerHTML+=`<div><b>AI:</b> ${r}</div>`;
-  i.value="";
+/* ================= NAV ================= */
+function showGame(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
 }
 
 /* ================= SNAKE ================= */
 
 let s=document.getElementById("snakeCanvas");
-let sctx=s.getContext("2d");
+let ctx=s.getContext("2d");
 
 let snake=[{x:150,y:150}];
 let dx=10,dy=0;
 let food={x:100,y:100};
 let score=0;
 
-function snakeGame(){
-  requestAnimationFrame(snakeGame);
+function snakeLoop(){
+  requestAnimationFrame(snakeLoop);
 
-  sctx.fillStyle="#fff";
-  sctx.fillRect(0,0,300,300);
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,300,300);
 
-  let h={x:snake[0].x+dx,y:snake[0].y+dy};
-  snake.unshift(h);
+  let head={x:snake[0].x+dx,y:snake[0].y+dy};
+  snake.unshift(head);
 
-  if(h.x==food.x && h.y==food.y){
+  if(head.x==food.x && head.y==food.y){
     food={x:(Math.random()*28|0)*10,y:(Math.random()*28|0)*10};
     score++;
     document.getElementById("score").innerText=score;
-    addAch("Snake score");
   } else snake.pop();
 
-  sctx.fillStyle="#4f46e5";
-  snake.forEach(p=>sctx.fillRect(p.x,p.y,10,10));
+  ctx.fillStyle="#4f46e5";
+  snake.forEach(p=>ctx.fillRect(p.x,p.y,10,10));
 
-  sctx.fillStyle="#ef4444";
-  sctx.fillRect(food.x,food.y,10,10);
+  ctx.fillStyle="red";
+  ctx.fillRect(food.x,food.y,10,10);
 }
-snakeGame();
+snakeLoop();
 
 document.addEventListener("keydown",e=>{
   if(e.key=="ArrowUp"){dx=0;dy=-10;}
@@ -347,7 +273,7 @@ function pong(){
   pctx.fillStyle="#111827";
   pctx.fillRect(paddle,290,60,10);
 
-  pctx.fillStyle="#2563eb";
+  pctx.fillStyle="blue";
   pctx.fillRect(ball.x,ball.y,10,10);
 }
 pong();
