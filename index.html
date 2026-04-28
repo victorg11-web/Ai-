@@ -3,152 +3,150 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clicker PRO + Leaderboard</title>
+  <title>CLICKER MMO ECONOMY ULTIMATE</title>
   <style>
-    body{
-      margin:0;
-      font-family:Arial;
-      background:#020617;
-      color:white;
-      text-align:center;
-    }
-
-    .container{max-width:1000px;margin:auto;padding:20px;}
-
+    body{margin:0;font-family:Arial;background:#020617;color:white;text-align:center;}
+    .container{max-width:1200px;margin:auto;padding:20px;}
     #score{font-size:3rem;}
-
-    #clickBtn{
-      padding:20px 40px;
-      font-size:1.5rem;
-      border:none;
-      border-radius:15px;
-      cursor:pointer;
-      background:var(--main,#22c55e);
-      transition:0.1s;
-    }
-
-    #clickBtn:active{transform:scale(0.9);}
-
+    #clickBtn{padding:20px 40px;font-size:1.5rem;border:none;border-radius:15px;cursor:pointer;background:#22c55e;}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;}
-
     .panel{background:rgba(255,255,255,0.05);padding:10px;border-radius:10px;}
-
-    .btn{padding:6px 10px;border:none;border-radius:8px;cursor:pointer;}
-
-    .shop-item{margin:5px 0;}
-
-    .float{position:absolute;color:#22c55e;animation:up 1s forwards;}
-
-    @keyframes up{0%{opacity:1;}100%{opacity:0;transform:translateY(-80px);}}
-
+    .btn{padding:6px 10px;border:none;border-radius:8px;cursor:pointer;margin:3px;}
+    input{padding:5px;border-radius:6px;border:none;}
+    .log{max-height:150px;overflow:auto;text-align:left;font-size:0.9rem;}
   </style>
 </head>
 <body>
 
 <div class="container">
+<h1>🌍 CLICKER MMO ECONOMY</h1>
 
-<h1>🔥 CLICKER ULTIMATE 🔥</h1>
-<div id="level">Level 1</div>
+<div id="nameTag"></div>
 <div id="score">0</div>
+<div id="wallet">Wallet: 0</div>
 <button id="clickBtn">CLICK</button>
 
 <div class="grid">
 
 <div class="panel">
-<h3>Shop 🛒</h3>
-<button class="btn" onclick="buyPower()">+Power (10)</button>
-<button class="btn" onclick="buyAuto()">Auto (25)</button>
+<h3>💰 Wallet Trading</h3>
+<input id="tradeTo" placeholder="Player" />
+<input id="tradeAmount" placeholder="Amount" />
+<button class="btn" onclick="sendTrade()">Send</button>
+<div id="tradeLog" class="log"></div>
 </div>
 
 <div class="panel">
-<h3>Skins 🎨</h3>
-<button class="btn" onclick="setSkin('#22c55e')">Green</button>
-<button class="btn" onclick="setSkin('#3b82f6')">Blue</button>
-<button class="btn" onclick="setSkin('#ef4444')">Red</button>
+<h3>🏛 Auction House (Bidding)</h3>
+<input id="itemName" placeholder="Item" />
+<input id="startPrice" placeholder="Start price" />
+<button class="btn" onclick="listItem()">List</button>
+<div id="auctionLog" class="log"></div>
 </div>
 
 <div class="panel">
-<h3>Achievements 🏆</h3>
-<div id="ach"></div>
+<h3>🎒 Inventory (Rarity + Stats)</h3>
+<button class="btn" onclick="dropItem()">Open Loot</button>
+<div id="inv"></div>
 </div>
 
 <div class="panel">
-<h3>Leaderboard 🌍</h3>
-<div id="board"></div>
-<button class="btn" onclick="submitScore()">Submit Score</button>
+<h3>📜 Transactions</h3>
+<div id="tx" class="log"></div>
 </div>
 
 </div>
-
 </div>
 
 <script>
-let score=0,clickPower=1,auto=0,skin="#22c55e";
-let achievements=[];
-let leaderboard=[];
+let score=0;
+let wallet=0;
+let name=prompt("Navn?")||"Player";
 
-const scoreEl=document.getElementById("score");
-const board=document.getElementById("board");
+let inventory=[];
+let trades=[];
+let auctions=[];
+let txLog=[];
 
-function level(){return Math.floor(score/100)+1;}
+function rarity(){
+  let r=Math.random();
+  if(r<0.6) return "Common";
+  if(r<0.85) return "Rare";
+  if(r<0.97) return "Epic";
+  return "Legendary";
+}
+
+function stat(){
+  return Math.floor(Math.random()*10+1);
+}
 
 function update(){
-  scoreEl.innerText=Math.floor(score);
-  document.documentElement.style.setProperty('--main',skin);
-  renderBoard();
-  renderAch();
+  document.getElementById("score").innerText=Math.floor(score);
+  document.getElementById("wallet").innerText="Wallet: "+wallet;
+  document.getElementById("nameTag").innerText=name;
+
+  document.getElementById("inv").innerHTML=inventory.map(i=>
+    `🎁 ${i.name} (${i.rarity}) ATK:${i.stat}`
+  ).join("<br>");
+
+  document.getElementById("tradeLog").innerHTML=trades.map(t=>
+    `${t.from} → ${t.to} : ${t.amount}`
+  ).join("<br>");
+
+  document.getElementById("auctionLog").innerHTML=auctions.map(a=>
+    `🏷 ${a.item} | bid: ${a.bid}`
+  ).join("<br>");
+
+  document.getElementById("tx").innerHTML=txLog.slice(-10).join("<br>");
 }
 
-function add(v){score+=v;update();}
+// CLICK
+clickBtn.onclick=()=>{score++;wallet++;update();};
 
-document.getElementById("clickBtn").onclick=()=>add(clickPower);
-
-function buyPower(){if(score>=10){score-=10;clickPower++;update();}}
-function buyAuto(){if(score>=25){score-=25;auto++;update();}}
-
-setInterval(()=>add(auto),1000);
-
-// skins
-function setSkin(c){skin=c;update();}
-
-// achievements
-function renderAch(){
-  if(score>100&&!achievements.includes("100")) achievements.push("100 points");
-  if(score>1000&&!achievements.includes("1K")) achievements.push("1K points");
-  document.getElementById("ach").innerHTML=achievements.map(a=>"<div>"+a+"</div>").join("");
+// ITEM DROP
+function dropItem(){
+  let item={name:"Sword",rarity:rarity(),stat:stat()};
+  inventory.push(item);
+  log("Loot: "+item.name);
+  update();
 }
 
-// leaderboard (fake global + local merge)
-function loadBoard(){
-  let local=JSON.parse(localStorage.getItem("lb")||"[]");
-  let fake=[
-    {name:"ProPlayer",score:5000},
-    {name:"NoobMaster",score:3200},
-    {name:"ClickGod",score:8000}
-  ];
-  leaderboard=[...local,...fake].sort((a,b)=>b.score-a.score).slice(0,10);
+// TRADING (anti-scam confirm)
+function sendTrade(){
+  let to=document.getElementById("tradeTo").value;
+  let amt=parseInt(document.getElementById("tradeAmount").value||"0");
+
+  if(amt<=0||wallet<amt){alert("Invalid trade");return;}
+
+  if(confirm("Confirm trade to "+to+"?")){
+    wallet-=amt;
+    trades.push({from:name,to,amount:amt});
+    tx("Trade sent to "+to+" : -"+amt);
+  }
+
+  update();
 }
 
-function renderBoard(){
-  loadBoard();
-  board.innerHTML=leaderboard.map(p=>`<div>${p.name}: ${p.score}</div>`).join("");
+// AUCTION BIDDING
+function listItem(){
+  let item=document.getElementById("itemName").value;
+  let price=parseInt(document.getElementById("startPrice").value||"0");
+  auctions.push({item,bid:price});
+  tx("Listed item: "+item);
+  update();
 }
 
-function submitScore(){
-  let name=prompt("Name?")||"Player";
-  let lb=JSON.parse(localStorage.getItem("lb")||"[]");
-  lb.push({name,score:Math.floor(score)});
-  localStorage.setItem("lb",JSON.stringify(lb));
-  alert("Submitted!");
-  renderBoard();
-}
+// TX LOG
+function tx(m){txLog.push(new Date().toLocaleTimeString()+" - "+m);}
 
-// save
-setInterval(()=>localStorage.setItem("save",JSON.stringify({score,clickPower,auto,skin})),3000);
+// SAVE
+setInterval(()=>{
+  localStorage.setItem("save",JSON.stringify({score,wallet,name,inventory}));
+},3000);
 
 function load(){
   let d=JSON.parse(localStorage.getItem("save"));
-  if(d){score=d.score;clickPower=d.clickPower;auto=d.auto;skin=d.skin;}
+  if(d){score=d.score;wallet=d.wallet;name=d.name;inventory=d.inventory;}
   update();
 }
 
