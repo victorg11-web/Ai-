@@ -5,145 +5,245 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VT Shoppen</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <script src="https://js.stripe.com/v3/"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --bg:#070b1a;
-      --card:rgba(255,255,255,0.06);
-      --stroke:rgba(255,255,255,0.1);
-      --accent:#38bdf8;
-      --accent2:#8b5cf6;
+      --bg:#0b0f17;
+      --panel:#111827;
+      --card:#0f172a;
+      --border:#1f2937;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --accent:#3b82f6;
+      --accent2:#6366f1;
+      --danger:#ef4444;
+      --success:#22c55e;
     }
 
     *{margin:0;padding:0;box-sizing:border-box;}
 
     body{
-      font-family:Poppins,sans-serif;
+      font-family:Inter,sans-serif;
       background:var(--bg);
-      color:#fff;
+      color:var(--text);
     }
 
+    /* TOPBAR */
     header{
-      padding:15px 20px;
+      position:sticky;
+      top:0;
+      z-index:10;
+      background:rgba(17,24,39,0.9);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--border);
+    }
+
+    .nav{
+      max-width:1200px;
+      margin:auto;
       display:flex;
       justify-content:space-between;
       align-items:center;
-      background:rgba(0,0,0,0.5);
-      border-bottom:1px solid var(--stroke);
-      position:sticky;
-      top:0;
+      padding:14px 20px;
     }
 
     .logo{
       font-weight:700;
-      background:linear-gradient(90deg,var(--accent),var(--accent2));
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
+      letter-spacing:0.5px;
     }
 
-    .cart{
+    .menu button{
+      background:none;
+      border:none;
+      color:var(--muted);
+      margin:0 10px;
       cursor:pointer;
-      background:var(--card);
+      font-weight:500;
+    }
+
+    .menu button:hover{color:var(--text);}
+
+    .cartBtn{
+      background:var(--panel);
+      border:1px solid var(--border);
       padding:8px 12px;
       border-radius:10px;
-      border:1px solid var(--stroke);
-    }
-
-    .container{max-width:1100px;margin:auto;padding:20px;}
-
-    h2{margin:20px 0;}
-
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:15px;}
-
-    .card{
-      background:var(--card);
-      border:1px solid var(--stroke);
-      padding:15px;
-      border-radius:15px;
-    }
-
-    .btn{
-      width:100%;
-      padding:10px;
-      margin-top:10px;
-      border:none;
-      border-radius:10px;
-      background:linear-gradient(90deg,var(--accent),var(--accent2));
-      color:#fff;
       cursor:pointer;
     }
 
+    /* LAYOUT */
+    .container{
+      max-width:1200px;
+      margin:auto;
+      padding:30px 20px;
+    }
+
+    h1,h2{margin-bottom:15px;}
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:16px;
+    }
+
+    /* CARD */
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:16px;
+      transition:.2s;
+    }
+
+    .card:hover{
+      transform:translateY(-3px);
+      border-color:#334155;
+    }
+
+    .title{font-weight:600;}
+    .price{color:var(--muted);margin-top:6px;}
+
+    .btn{
+      margin-top:12px;
+      width:100%;
+      padding:10px;
+      border:none;
+      border-radius:10px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:white;
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    .btn:hover{opacity:0.9;}
+
     /* CART */
-    .cartBox{
+    .cart{
       position:fixed;
       right:20px;
       top:70px;
-      width:280px;
-      background:#0b122a;
-      border:1px solid var(--stroke);
-      border-radius:15px;
+      width:320px;
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:14px;
       padding:15px;
       display:none;
     }
 
-    .item{font-size:14px;margin:5px 0;}
+    .item{
+      display:flex;
+      justify-content:space-between;
+      font-size:14px;
+      margin:6px 0;
+      color:var(--muted);
+    }
+
+    .total{
+      margin-top:10px;
+      font-weight:600;
+    }
+
+    /* AUTH */
+    .auth{
+      max-width:360px;
+      margin:60px auto;
+      background:var(--panel);
+      border:1px solid var(--border);
+      padding:20px;
+      border-radius:14px;
+    }
+
+    input{
+      width:100%;
+      margin-top:10px;
+      padding:10px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:#0b1220;
+      color:white;
+      outline:none;
+    }
+
+    .muted{color:var(--muted);font-size:13px;}
 
   </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">💎 VT Shoppen</div>
-  <div class="cart" onclick="toggleCart()">🛒 Kurv (<span id="count">0</span>)</div>
+  <div class="nav">
+    <div class="logo">VT SHOPPEN</div>
+
+    <div class="menu">
+      <button onclick="show('twitch')">Twitch</button>
+      <button onclick="show('roblox')">Roblox</button>
+      <button onclick="show('robux')">Robux</button>
+    </div>
+
+    <div class="cartBtn" onclick="toggleCart()">🛒 <span id="count">0</span></div>
+  </div>
 </header>
 
 <div class="container">
 
-  <h2>🔥 Twitch Followers</h2>
-  <div class="grid">
-    <div class="card">1.000 – 7 DKK<button class="btn" onclick="add('Twitch 1000',7)">Tilføj</button></div>
-    <div class="card">2.000 – 14 DKK<button class="btn" onclick="add('Twitch 2000',14)">Tilføj</button></div>
-    <div class="card">3.000 – 21 DKK<button class="btn" onclick="add('Twitch 3000',21)">Tilføj</button></div>
-    <div class="card">4.000 – 28 DKK<button class="btn" onclick="add('Twitch 4000',28)">Tilføj</button></div>
-    <div class="card">5.000 – 35 DKK<button class="btn" onclick="add('Twitch 5000',35)">Tilføj</button></div>
+  <!-- AUTH -->
+  <div id="auth" class="auth">
+    <h2>Login</h2>
+    <p class="muted">Opret eller login for at fortsætte</p>
+    <input id="email" placeholder="Email" />
+    <input id="pass" type="password" placeholder="Password" />
+    <button class="btn" onclick="login()">Login</button>
+    <button class="btn" onclick="signup()">Opret konto</button>
   </div>
 
-  <h2>🎮 Roblox Followers (2x Twitch)</h2>
-  <div class="grid">
-    <div class="card">1.000 – 14 DKK<button class="btn" onclick="add('Roblox 1000',14)">Tilføj</button></div>
-    <div class="card">2.000 – 28 DKK<button class="btn" onclick="add('Roblox 2000',28)">Tilføj</button></div>
-    <div class="card">3.000 – 42 DKK<button class="btn" onclick="add('Roblox 3000',42)">Tilføj</button></div>
-    <div class="card">4.000 – 56 DKK<button class="btn" onclick="add('Roblox 4000',56)">Tilføj</button></div>
-    <div class="card">5.000 – 70 DKK<button class="btn" onclick="add('Roblox 5000',70)">Tilføj</button></div>
+  <!-- TWITCH -->
+  <div id="twitch" style="display:none">
+    <h2>Twitch Followers</h2>
+    <div class="grid">
+      <div class="card"><div class="title">1.000 Followers</div><div class="price">7 DKK</div><button class="btn" onclick="add('Twitch 1k',7)">Tilføj</button></div>
+      <div class="card"><div class="title">2.000 Followers</div><div class="price">14 DKK</div><button class="btn" onclick="add('Twitch 2k',14)">Tilføj</button></div>
+      <div class="card"><div class="title">5.000 Followers</div><div class="price">35 DKK</div><button class="btn" onclick="add('Twitch 5k',35)">Tilføj</button></div>
+    </div>
   </div>
 
-  <h2>💎 Robux</h2>
-  <div class="grid">
-    <div class="card">1000 – 45 DKK<button class="btn" onclick="add('Robux 1000',45)">Tilføj</button></div>
-    <div class="card">2000 – 87 DKK<button class="btn" onclick="add('Robux 2000',87)">Tilføj</button></div>
-    <div class="card">3000 – 125 DKK<button class="btn" onclick="add('Robux 3000',125)">Tilføj</button></div>
-    <div class="card">4000 – 167 DKK<button class="btn" onclick="add('Robux 4000',167)">Tilføj</button></div>
-    <div class="card">5000 – 215 DKK<button class="btn" onclick="add('Robux 5000',215)">Tilføj</button></div>
-    <div class="card">10000 – 420 DKK<button class="btn" onclick="add('Robux 10000',420)">Tilføj</button></div>
-    <div class="card">100000 – 4150 DKK<button class="btn" onclick="add('Robux 100000',4150)">Tilføj</button></div>
+  <!-- ROBLOX -->
+  <div id="roblox" style="display:none">
+    <h2>Roblox Followers</h2>
+    <div class="grid">
+      <div class="card"><div class="title">1.000 Followers</div><div class="price">14 DKK</div><button class="btn" onclick="add('Roblox 1k',14)">Tilføj</button></div>
+      <div class="card"><div class="title">2.000 Followers</div><div class="price">28 DKK</div><button class="btn" onclick="add('Roblox 2k',28)">Tilføj</button></div>
+      <div class="card"><div class="title">5.000 Followers</div><div class="price">70 DKK</div><button class="btn" onclick="add('Roblox 5k',70)">Tilføj</button></div>
+    </div>
+  </div>
+
+  <!-- ROBUX -->
+  <div id="robux" style="display:none">
+    <h2>Robux</h2>
+    <div class="grid">
+      <div class="card"><div class="title">1.000 Robux</div><div class="price">45 DKK</div><button class="btn" onclick="add('Robux 1k',45)">Tilføj</button></div>
+      <div class="card"><div class="title">10.000 Robux</div><div class="price">420 DKK</div><button class="btn" onclick="add('Robux 10k',420)">Tilføj</button></div>
+    </div>
   </div>
 
 </div>
 
 <!-- CART -->
-<div class="cartBox" id="cartBox">
-  <h3>🛒 Kurv</h3>
+<div class="cart" id="cart">
+  <h3>Kurv</h3>
   <div id="items"></div>
-  <hr style="margin:10px 0; border-color:#333">
-  <div>Total: <span id="total">0</span> DKK</div>
-  <button class="btn" onclick="checkout()">Checkout</button>
+  <div class="total">Total: <span id="total">0</span> DKK</div>
+  <button class="btn">Checkout</button>
 </div>
 
 <script>
 
 let cart=[];
+
+function show(id){
+  document.querySelectorAll('.container > div').forEach(d=>d.style.display='none');
+  document.getElementById(id).style.display='block';
+}
 
 function add(name,price){
   cart.push({name,price});
@@ -157,7 +257,7 @@ function update(){
   let total=0;
 
   cart.forEach(i=>{
-    html+=`<div class='item'>${i.name} - ${i.price} DKK</div>`;
+    html+=`<div class='item'><span>${i.name}</span><span>${i.price} DKK</span></div>`;
     total+=i.price;
   });
 
@@ -166,13 +266,20 @@ function update(){
 }
 
 function toggleCart(){
-  let c=document.getElementById('cartBox');
+  let c=document.getElementById('cart');
   c.style.display=c.style.display==='block'?'none':'block';
 }
 
-function checkout(){
-  alert('Sender til betaling... (Stripe backend kræves)');
+function login(){
+  document.getElementById('auth').style.display='none';
+  show('twitch');
 }
+
+function signup(){
+  login();
+}
+
+show('twitch');
 
 </script>
 
