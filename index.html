@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+x<!DOCTYPE html>
 <html lang="da">
 <head>
   <meta charset="UTF-8" />
@@ -10,88 +10,86 @@
 
   <style>
     :root{
-      --bg1:#070b1a;
-      --bg2:#0b122a;
+      --bg:#070b1a;
       --card:rgba(255,255,255,0.06);
       --stroke:rgba(255,255,255,0.1);
       --accent:#38bdf8;
       --accent2:#8b5cf6;
-      --good:#22c55e;
-      --warn:#facc15;
-      --red:#ef4444;
     }
 
     *{margin:0;padding:0;box-sizing:border-box;}
 
     body{
       font-family:Poppins,sans-serif;
-      background: radial-gradient(circle at top, var(--bg2), var(--bg1));
+      background:var(--bg);
       color:#fff;
       overflow-x:hidden;
     }
 
+    /* PARTICLES */
+    #particles{
+      position:fixed;
+      inset:0;
+      z-index:-1;
+    }
+
     header{
-      padding:20px;
-      text-align:center;
-      background:rgba(0,0,0,0.4);
-      backdrop-filter: blur(12px);
+      padding:15px 20px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      background:rgba(0,0,0,0.5);
       border-bottom:1px solid var(--stroke);
       position:sticky;
       top:0;
       z-index:10;
     }
 
-    header h1{
-      font-size:26px;
+    .logo{
+      font-weight:700;
       background:linear-gradient(90deg,var(--accent),var(--accent2));
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
     }
 
-    nav{margin-top:10px;display:flex;justify-content:center;gap:20px;}
-    nav a{color:#aaa;text-decoration:none;cursor:pointer;}
-    nav a:hover{color:#fff;}
+    nav button{
+      background:none;
+      border:none;
+      color:#aaa;
+      margin:0 8px;
+      cursor:pointer;
+    }
 
-    .container{max-width:1100px;margin:auto;padding:40px 20px;}
+    nav button:hover{color:#fff;}
 
-    h2{margin:40px 0 20px;}
+    .container{max-width:1100px;margin:auto;padding:20px;}
 
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:15px;margin-top:20px;}
 
     .card{
       background:var(--card);
       border:1px solid var(--stroke);
-      padding:20px;
-      border-radius:18px;
-      backdrop-filter: blur(12px);
-      transition:.25s;
-      position:relative;
+      padding:15px;
+      border-radius:15px;
+      transition:.3s;
+      animation:fade .4s ease;
     }
 
-    .card:hover{transform:translateY(-6px);border-color:var(--accent);}
+    .card:hover{transform:translateY(-5px);}
 
-    .price{color:#bbb;margin-top:5px;}
+    @keyframes fade{
+      from{opacity:0;transform:translateY(10px)}
+      to{opacity:1;transform:translateY(0)}
+    }
 
     .btn{
-      margin-top:12px;
-      width:100%;
-      padding:10px;
-      border:none;
-      border-radius:10px;
+      width:100%;padding:10px;margin-top:10px;
+      border:none;border-radius:10px;
       background:linear-gradient(90deg,var(--accent),var(--accent2));
-      color:#fff;
-      font-weight:600;
-      cursor:pointer;
+      color:#fff;cursor:pointer;
     }
 
-    .badge{position:absolute;top:10px;right:10px;font-size:11px;padding:5px 10px;border-radius:999px;background:var(--good);font-weight:700;}
-    .badge.warn{background:var(--warn);color:#000;}
-
-    /* LOGIN */
-    .login{max-width:320px;margin:auto;background:var(--card);padding:20px;border-radius:18px;border:1px solid var(--stroke);}
-    input{width:100%;padding:10px;margin-top:10px;border-radius:10px;border:none;outline:none;}
-
-    /* MODAL */
+    /* CHECKOUT STEPS */
     .modal{
       display:none;
       position:fixed;
@@ -99,136 +97,176 @@
       background:rgba(0,0,0,0.7);
       align-items:center;
       justify-content:center;
-      z-index:100;
     }
 
-    .modal-content{
+    .box{
+      width:350px;
       background:#0b122a;
       padding:20px;
-      border-radius:16px;
-      width:320px;
+      border-radius:15px;
       border:1px solid var(--stroke);
+      animation:fade .3s ease;
     }
 
-    /* LOADING */
-    .loading{
+    .step{display:none;}
+    .step.active{display:block;}
+
+    input{
+      width:100%;padding:10px;margin-top:10px;
+      border:none;border-radius:10px;
+    }
+
+    /* ADMIN */
+    #admin{
       display:none;
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.6);
-      align-items:center;
-      justify-content:center;
-      z-index:200;
-      font-size:18px;
     }
 
   </style>
 </head>
 <body>
 
+<canvas id="particles"></canvas>
+
 <header>
-  <h1>💎 VT Shoppen</h1>
+  <div class="logo">💎 VT Shoppen</div>
   <nav>
-    <a onclick="adminLogin()">Admin</a>
-    <a href="#robux">Shop</a>
+    <button onclick="show('shop')">Shop</button>
+    <button onclick="show('twitch')">Twitch</button>
+    <button onclick="show('roblox')">Roblox</button>
+    <button onclick="show('robux')">Robux</button>
+    <button onclick="openAdmin()">Admin</button>
   </nav>
 </header>
 
 <div class="container">
 
-  <div class="login">
-    <h3>Login</h3>
-    <input id="username" placeholder="Brugernavn" />
-    <input id="password" type="password" placeholder="Kodeord" />
-    <button class="btn" onclick="login()">Login</button>
+  <!-- SHOP -->
+  <div id="shop">
+    <h2>🔥 Kategorier</h2>
+    <div class="grid">
+      <div class="card">📡 Twitch<button class="btn" onclick="show('twitch')">Åbn</button></div>
+      <div class="card">🎮 Roblox<button class="btn" onclick="show('roblox')">Åbn</button></div>
+      <div class="card">💎 Robux<button class="btn" onclick="show('robux')">Åbn</button></div>
+    </div>
   </div>
 
-  <h2>💎 Robux Shop</h2>
+  <!-- TWITCH -->
+  <div id="twitch" style="display:none">
+    <h2>Twitch</h2>
+    <div class="grid">
+      <div class="card">1000 - 7DKK<button class="btn" onclick="checkout('Twitch 1000',7)">Køb</button></div>
+      <div class="card">2000 - 14DKK<button class="btn" onclick="checkout('Twitch 2000',14)">Køb</button></div>
+    </div>
+  </div>
 
-  <div class="grid">
+  <!-- ROBLOX -->
+  <div id="roblox" style="display:none">
+    <h2>Roblox</h2>
+    <div class="grid">
+      <div class="card">1000 - 14DKK<button class="btn" onclick="checkout('Roblox 1000',14)">Køb</button></div>
+    </div>
+  </div>
 
-    <div class="card"><h3>1000 Robux</h3><div class="price">45 DKK</div><button class="btn" onclick="openCheckout('Robux 1000',45)">Køb</button></div>
-
-    <div class="card"><h3>2000 Robux</h3><div class="price">87 DKK</div><button class="btn" onclick="openCheckout('Robux 2000',87)">Køb</button></div>
-
-    <div class="card"><h3>10000 Robux</h3><div class="price">420 DKK</div><div class="badge warn">🔥 BEST</div><button class="btn" onclick="openCheckout('Robux 10000',420)">Køb</button></div>
-
+  <!-- ROBUX -->
+  <div id="robux" style="display:none">
+    <h2>Robux</h2>
+    <div class="grid">
+      <div class="card">1000 - 45DKK<button class="btn" onclick="checkout('Robux 1000',45)">Køb</button></div>
+      <div class="card">10000 - 420DKK<button class="btn" onclick="checkout('Robux 10000',420)">🔥 Best</button></div>
+    </div>
   </div>
 
 </div>
 
-<!-- CHECKOUT MODAL -->
+<!-- CHECKOUT -->
 <div class="modal" id="modal">
-  <div class="modal-content">
-    <h3 id="productName">Produkt</h3>
-    <p id="productPrice"></p>
+  <div class="box">
 
-    <input id="coupon" placeholder="Coupon kode" />
+    <div class="step active" id="step1">
+      <h3>🧾 Produkt</h3>
+      <p id="pname"></p>
+      <button class="btn" onclick="next(2)">Videre</button>
+    </div>
 
-    <button class="btn" onclick="pay()">Betal nu</button>
+    <div class="step" id="step2">
+      <h3>🎁 Coupon</h3>
+      <input id="coupon" placeholder="Kode" />
+      <button class="btn" onclick="next(3)">Videre</button>
+    </div>
+
+    <div class="step" id="step3">
+      <h3>💳 Betal</h3>
+      <button class="btn" onclick="pay()">Stripe Checkout</button>
+    </div>
+
   </div>
 </div>
 
-<!-- LOADING -->
-<div class="loading" id="loading">⏳ Processing...</div>
+<!-- ADMIN -->
+<div id="admin" class="container">
+  <h2>📊 Admin Dashboard</h2>
+  <div class="card">
+    <p>Orders: 0 (demo)</p>
+    <p>Revenue: 0 DKK</p>
+  </div>
+</div>
 
-<!-- AUDIO -->
-<audio id="sound" src="https://www.myinstants.com/media/sounds/money.mp3"></audio>
+<audio id="click" src="https://www.myinstants.com/media/sounds/mouse-click.mp3"></audio>
 
 <script>
 
-let selectedPrice=0;
-let selectedProduct="";
+let product="";
+let price=0;
 
-function login(){
-  localStorage.setItem('user',document.getElementById('username').value);
-  alert("Logget ind");
+function sound(){document.getElementById('click').play();}
+
+function show(id){
+  sound();
+  document.querySelectorAll('.container > div').forEach(d=>d.style.display='none');
+  document.getElementById(id).style.display='block';
 }
 
-function openCheckout(name,price){
-  selectedProduct=name;
-  selectedPrice=price;
-
-  document.getElementById('productName').innerText=name;
-  document.getElementById('productPrice').innerText=price+" DKK";
-  document.getElementById('modal').style.display="flex";
+function checkout(p,pr){
+  product=p;price=pr;
+  document.getElementById('pname').innerText=p+" - "+pr+" DKK";
+  document.getElementById('modal').style.display='flex';
 }
 
-function applyCoupon(price){
-  const code=document.getElementById('coupon').value;
-  if(code=="VT10") return price*0.9;
-  if(code=="VT20") return price*0.8;
-  return price;
+function next(s){sound();document.querySelectorAll('.step').forEach(e=>e.classList.remove('active'));document.getElementById('step'+s).classList.add('active');}
+
+function applyCoupon(p){
+  let c=document.getElementById('coupon').value;
+  if(c==='VT10')return p*0.9;
+  if(c==='VT20')return p*0.8;
+  return p;
 }
 
 async function pay(){
-
-  document.getElementById('loading').style.display="flex";
-
-  let finalPrice=applyCoupon(selectedPrice);
-
-  document.getElementById('sound').play();
+  sound();
+  let final=applyCoupon(price);
 
   const res=await fetch('https://din-backend-url.com/create-checkout-session',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({product:selectedProduct,price:finalPrice})
+    body:JSON.stringify({product,price:final})
   });
 
   const data=await res.json();
-
   const stripe=Stripe('DIN_PUBLIC_KEY');
   stripe.redirectToCheckout({sessionId:data.id});
 }
 
-function adminLogin(){
-  const pass=prompt("Admin password?");
-  if(pass=="admin123"){
-    alert("Admin panel unlocked (placeholder)");
-  }else{
-    alert("Wrong password");
+function openAdmin(){
+  let p=prompt('Admin password');
+  if(p==='admin123'){
+    show('admin');
   }
 }
+
+/* SIMPLE PARTICLES */
+const c=document.getElementById('particles');const x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
+let pts=Array.from({length:60},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*2}));
+function draw(){x.clearRect(0,0,c.width,c.height);x.fillStyle='rgba(255,255,255,0.5)';pts.forEach(p=>{p.y+=0.3;if(p.y>c.height)p.y=0;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fill();});requestAnimationFrame(draw);}draw();
 
 </script>
 
