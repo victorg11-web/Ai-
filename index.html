@@ -64,9 +64,13 @@ nav a:hover{color:white}
 /* MOBILE NAV */
 .mobile-nav{
   display:none;
-  position:fixed;bottom:10px;left:50%;transform:translateX(-50%);
+  position:fixed;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
   background:#111a2e;
-  padding:10px;border-radius:20px;
+  padding:10px;
+  border-radius:20px;
   gap:10px;
 }
 .mobile-nav a{color:white;text-decoration:none}
@@ -79,7 +83,7 @@ nav a:hover{color:white}
 <div class="logo">VT <span>Shoppen</span></div>
 <nav>
 <a href="index.html">Home</a>
-<a href="profile.html">Profil</a>
+<a href="https://www.roblox.com/users/3376657202/profile?friendshipSourceType=PlayerSearch">Profile</a>
 <a href="community.html">Community</a>
 </nav>
 </header>
@@ -94,7 +98,7 @@ nav a:hover{color:white}
 
 <div class="mobile-nav">
 <a href="index.html">🏠</a>
-<a href="profile.html">🧑‍🎨</a>
+<a href="https://www.roblox.com/users/3376657202/profile?friendshipSourceType=PlayerSearch">🧑‍🎨</a>
 <a href="community.html">💬</a>
 </div>
 
@@ -119,7 +123,6 @@ setInterval(()=>{
 
 render();
 
-// SOUND
 function clickSound(){
   const ctx=new AudioContext();
   const o=ctx.createOscillator();
@@ -213,7 +216,6 @@ function send(){
     div.innerText=(localStorage.getItem('user')||"Guest")+": "+m.value;
     box.appendChild(div);
 
-    // SOUND
     let ctx=new AudioContext();
     let o=ctx.createOscillator();
     o.frequency.value=800;
