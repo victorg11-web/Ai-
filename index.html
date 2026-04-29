@@ -1,14 +1,19 @@
 <!-- =====================================================
-VT SHOPPEN - GITHUB MULTI PAGE PROJECT (SIMULATED)
-Files:
-1) index.html (Home + News)
-2) profile.html (User Profile System)
-3) community.html (Chat + Sounds)
+VT SHOPPEN - FUTURISTIC ROBLOX FAN WEBSITE (REDESIGNED)
+Multi-page GitHub structure
 ===================================================== -->
+
+/*
+FILES:
+- index.html (Home Dashboard)
+- news.html (Roblox News)
+- profile.html (Roblox Profile Redirect)
+- community.html (Chat)
+*/
 
 
 /* =========================
-FILE 1: index.html
+FILE: index.html
 ========================= */
 <!DOCTYPE html>
 <html lang="da">
@@ -18,164 +23,222 @@ FILE 1: index.html
 <title>VT Shoppen</title>
 <style>
 :root{
-  --bg:#070a12;
-  --card:#111a2e;
-  --accent:#7c5cff;
-  --accent2:#00e5ff;
-  --text:#eaf0ff;
-  --muted:#9aa6bd;
+  --bg:#05060a;
+  --card:#0f172a;
+  --accent:#8b5cf6;
+  --accent2:#22d3ee;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
 }
 *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui;}
-body{background:radial-gradient(circle at top,#1a2450,var(--bg));color:var(--text);}
+body{
+  background:radial-gradient(circle at top,#111827,var(--bg));
+  color:var(--text);
+}
 
 header{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:15px 20px;
-  position:sticky;top:0;
-  backdrop-filter:blur(12px);
-  background:rgba(10,15,30,0.7);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 24px;
+  position:sticky;
+  top:0;
+  backdrop-filter:blur(14px);
+  background:rgba(0,0,0,0.4);
+  border-bottom:1px solid rgba(255,255,255,0.05);
 }
-.logo{font-weight:800}
+
+.logo{
+  font-weight:900;
+  letter-spacing:1px;
+}
 .logo span{color:var(--accent)}
-nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+
+nav a{
+  margin-left:14px;
+  text-decoration:none;
+  color:var(--muted);
+  transition:.2s;
+}
 nav a:hover{color:white}
 
 .btn{
   background:linear-gradient(45deg,var(--accent),var(--accent2));
-  border:none;padding:8px 12px;border-radius:10px;color:white;cursor:pointer
+  border:none;
+  padding:10px 14px;
+  border-radius:12px;
+  color:white;
+  cursor:pointer;
 }
 
-.hero{text-align:center;padding:40px}
+.hero{
+  text-align:center;
+  padding:70px 20px;
+}
+.hero h1{
+  font-size:48px;
+}
+.hero p{
+  color:var(--muted);
+  max-width:600px;
+  margin:10px auto;
+}
 
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:15px;
-  padding:20px;
+  gap:16px;
+  padding:30px;
 }
+
 .card{
   background:var(--card);
-  padding:15px;
-  border-radius:12px;
+  padding:18px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.06);
   transition:.3s;
 }
-.card:hover{transform:translateY(-5px)}
+.card:hover{
+  transform:translateY(-6px);
+  border-color:var(--accent);
+  box-shadow:0 0 25px rgba(139,92,246,0.25);
+}
 
-/* MOBILE NAV */
-.mobile-nav{
-  display:none;
+.mobilebar{
   position:fixed;
-  bottom:10px;
+  bottom:12px;
   left:50%;
   transform:translateX(-50%);
-  background:#111a2e;
-  padding:10px;
-  border-radius:20px;
-  gap:10px;
+  display:flex;
+  gap:12px;
+  background:rgba(15,23,42,0.9);
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.06);
 }
-.mobile-nav a{color:white;text-decoration:none}
-@media(max-width:600px){nav{display:none}.mobile-nav{display:flex}}
+.mobilebar a{
+  color:white;
+  text-decoration:none;
+  font-size:14px;
+}
+
 </style>
 </head>
 <body>
 
 <header>
-<div class="logo">VT <span>Shoppen</span></div>
-<nav>
-<a href="index.html">Home</a>
-<a href="https://www.roblox.com/users/3376657202/profile?friendshipSourceType=PlayerSearch">Profile</a>
-<a href="community.html">Community</a>
-</nav>
+  <div class="logo">VT <span>Shoppen</span></div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="news.html">News</a>
+    <a href="profile.html">Profile</a>
+    <a href="community.html">Community</a>
+  </nav>
 </header>
 
 <section class="hero">
-<h1>🔥 Roblox Hub</h1>
-<p>Nyheder, profiler & community</p>
+  <h1>Roblox Universe Hub</h1>
+  <p>Futuristisk fan-website med news, profiler og community</p>
 </section>
 
-<h2 style="padding:0 20px">📰 Live News</h2>
 <div class="grid" id="news"></div>
 
-<div class="mobile-nav">
-<a href="index.html">🏠</a>
-<a href="https://www.roblox.com/users/3376657202/profile?friendshipSourceType=PlayerSearch">🧑‍🎨</a>
-<a href="community.html">💬</a>
+<div class="mobilebar">
+  <a href="index.html">🏠</a>
+  <a href="news.html">📰</a>
+  <a href="profile.html">🧑</a>
+  <a href="community.html">💬</a>
 </div>
 
 <script>
-let news=["Roblox update released!","New avatar system!","VIP events incoming!"];
+let news=[
+"Roblox får ny avatar update",
+"VIP events coming soon",
+"New trending games exploded"
+];
 
+let box=document.getElementById("news");
 function render(){
-  let box=document.getElementById('news');box.innerHTML='';
+  box.innerHTML="";
   news.forEach(n=>{
-    let d=document.createElement('div');
-    d.className='card';
-    d.innerText="📰 "+n;
+    let d=document.createElement("div");
+    d.className="card";
+    d.textContent="📰 "+n;
     box.appendChild(d);
   });
 }
 
 setInterval(()=>{
-  news.unshift("Breaking #"+Math.floor(Math.random()*9999));
+  news.unshift("Breaking: " + Math.floor(Math.random()*9999));
   if(news.length>6)news.pop();
   render();
-},4000);
+},5000);
 
 render();
-
-function clickSound(){
-  const ctx=new AudioContext();
-  const o=ctx.createOscillator();
-  o.frequency.value=600;
-  o.connect(ctx.destination);
-  o.start();
-  setTimeout(()=>o.stop(),80);
-}
 </script>
+
 </body>
 </html>
 
 
 /* =========================
-FILE 2: profile.html
+FILE: profile.html
 ========================= */
 <!DOCTYPE html>
-<html lang="da">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profil</title>
+<title>Profile</title>
 <style>
-body{background:#070a12;color:white;font-family:system-ui;text-align:center}
-.card{background:#111a2e;margin:40px auto;padding:20px;border-radius:15px;width:300px}
-.avatar{width:100px;height:100px;border-radius:50%;background:linear-gradient(45deg,#7c5cff,#00e5ff);margin:auto}
-.badge{display:inline-block;padding:5px 10px;background:#7c5cff;border-radius:10px;margin:5px}
+body{background:#05060a;color:white;font-family:system-ui;text-align:center}
+.card{
+  background:#0f172a;
+  width:300px;
+  margin:60px auto;
+  padding:20px;
+  border-radius:16px;
+}
+.avatar{
+  width:90px;height:90px;border-radius:50%;
+  margin:auto;
+  background:linear-gradient(45deg,#8b5cf6,#22d3ee);
+}
+.badge{
+  padding:6px 10px;
+  background:#8b5cf6;
+  border-radius:10px;
+  margin:4px;
+  display:inline-block;
+}
 </style>
 </head>
 <body>
 
 <div class="card">
-<div class="avatar"></div>
-<h2 id="name">Player</h2>
-<p>Level: <span id="lvl">1</span></p>
-<p>Rank: <span id="rank">Member</span></p>
-<div>
-<span class="badge">New</span>
-<span class="badge">Roblox Fan</span>
-</div>
+  <div class="avatar"></div>
+  <h2 id="name">Player</h2>
+  <p>Level: <span id="lvl"></span></p>
+  <p>Rank: <span id="rank"></span></p>
+  <div>
+    <span class="badge">Roblox Fan</span>
+    <span class="badge">Active</span>
+  </div>
+  <br>
+  <a href="https://www.roblox.com/users/3376657202/profile?friendshipSourceType=PlayerSearch" style="color:#22d3ee">Open Roblox Profile</a>
 </div>
 
 <script>
-let user=localStorage.getItem('user')||"Guest";
-document.getElementById('name').innerText=user;
+let user=localStorage.getItem("user")||"Guest";
+document.getElementById("name").innerText=user;
 
-let level=Math.floor(Math.random()*50)+1;
-document.getElementById('lvl').innerText=level;
+let lvl=Math.floor(Math.random()*60)+1;
+document.getElementById("lvl").innerText=lvl;
 
 let rank="Member";
-if(level>40)rank="VIP";
-if(level>60)rank="ADMIN";
-document.getElementById('rank').innerText=rank;
+if(lvl>40)rank="VIP";
+if(lvl>55)rank="ADMIN";
+document.getElementById("rank").innerText=rank;
 </script>
 
 </body>
@@ -183,47 +246,49 @@ document.getElementById('rank').innerText=rank;
 
 
 /* =========================
-FILE 3: community.html
+FILE: community.html
 ========================= */
 <!DOCTYPE html>
-<html lang="da">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Community</title>
 <style>
-body{background:#070a12;color:white;font-family:system-ui}
-.chat{max-width:400px;margin:30px auto}
-.box{height:300px;overflow:auto;background:#111a2e;padding:10px;border-radius:10px}
+body{background:#05060a;color:white;font-family:system-ui}
+.chat{
+  max-width:400px;
+  margin:40px auto;
+}
+.box{
+  height:300px;
+  overflow:auto;
+  background:#0f172a;
+  padding:10px;
+  border-radius:12px;
+}
 input{width:70%;padding:10px}
-button{padding:10px;background:#7c5cff;border:none;color:white}
+button{padding:10px;background:#8b5cf6;border:none;color:white}
 </style>
 </head>
 <body>
 
 <div class="chat">
-<h2>💬 Chat</h2>
+<h2>💬 Community</h2>
 <div class="box" id="box"></div>
-<input id="msg"><button onclick="send()">Send</button>
+<input id="msg">
+<button onclick="send()">Send</button>
 </div>
 
 <script>
 function send(){
-  let m=document.getElementById('msg');
-  let box=document.getElementById('box');
+  let m=document.getElementById("msg");
+  let box=document.getElementById("box");
   if(m.value){
-    let div=document.createElement('div');
-    div.innerText=(localStorage.getItem('user')||"Guest")+": "+m.value;
-    box.appendChild(div);
-
-    let ctx=new AudioContext();
-    let o=ctx.createOscillator();
-    o.frequency.value=800;
-    o.connect(ctx.destination);
-    o.start();
-    setTimeout(()=>o.stop(),50);
-
-    m.value='';
+    let d=document.createElement("div");
+    d.textContent=(localStorage.getItem("user")||"Guest")+": "+m.value;
+    box.appendChild(d);
+    m.value="";
   }
 }
 </script>
