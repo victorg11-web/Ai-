@@ -1,80 +1,235 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VT Shoppen</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <script src="https://js.stripe.com/v3/"></script>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg,#0f172a,#020617); color: #fff; }
-    header { padding: 20px; text-align: center; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
-    header h1 { color: #38bdf8; }
-    nav { display: flex; justify-content: center; gap: 20px; margin-top: 10px; }
-    nav a { color: #fff; text-decoration: none; }
-    .container { padding: 40px; max-width: 1100px; margin: auto; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-    .card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; backdrop-filter: blur(15px); transition: 0.3s; }
-    .card:hover { transform: scale(1.05); }
-    .card h2 { color: #38bdf8; }
-    button { background: #38bdf8; border: none; padding: 10px; border-radius: 10px; cursor: pointer; }
-    .login-box { max-width: 300px; margin: 30px auto; }
-    input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 10px; border: none; }
+    :root{
+      --bg1:#070b1a;
+      --bg2:#0b122a;
+      --card:rgba(255,255,255,0.06);
+      --stroke:rgba(255,255,255,0.1);
+      --accent:#38bdf8;
+      --accent2:#8b5cf6;
+      --good:#22c55e;
+      --warn:#facc15;
+      --red:#ef4444;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;}
+
+    body{
+      font-family:Poppins,sans-serif;
+      background: radial-gradient(circle at top, var(--bg2), var(--bg1));
+      color:#fff;
+      overflow-x:hidden;
+    }
+
+    header{
+      padding:20px;
+      text-align:center;
+      background:rgba(0,0,0,0.4);
+      backdrop-filter: blur(12px);
+      border-bottom:1px solid var(--stroke);
+      position:sticky;
+      top:0;
+      z-index:10;
+    }
+
+    header h1{
+      font-size:26px;
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+
+    nav{margin-top:10px;display:flex;justify-content:center;gap:20px;}
+    nav a{color:#aaa;text-decoration:none;cursor:pointer;}
+    nav a:hover{color:#fff;}
+
+    .container{max-width:1100px;margin:auto;padding:40px 20px;}
+
+    h2{margin:40px 0 20px;}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;}
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--stroke);
+      padding:20px;
+      border-radius:18px;
+      backdrop-filter: blur(12px);
+      transition:.25s;
+      position:relative;
+    }
+
+    .card:hover{transform:translateY(-6px);border-color:var(--accent);}
+
+    .price{color:#bbb;margin-top:5px;}
+
+    .btn{
+      margin-top:12px;
+      width:100%;
+      padding:10px;
+      border:none;
+      border-radius:10px;
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      color:#fff;
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    .badge{position:absolute;top:10px;right:10px;font-size:11px;padding:5px 10px;border-radius:999px;background:var(--good);font-weight:700;}
+    .badge.warn{background:var(--warn);color:#000;}
+
+    /* LOGIN */
+    .login{max-width:320px;margin:auto;background:var(--card);padding:20px;border-radius:18px;border:1px solid var(--stroke);}
+    input{width:100%;padding:10px;margin-top:10px;border-radius:10px;border:none;outline:none;}
+
+    /* MODAL */
+    .modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.7);
+      align-items:center;
+      justify-content:center;
+      z-index:100;
+    }
+
+    .modal-content{
+      background:#0b122a;
+      padding:20px;
+      border-radius:16px;
+      width:320px;
+      border:1px solid var(--stroke);
+    }
+
+    /* LOADING */
+    .loading{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.6);
+      align-items:center;
+      justify-content:center;
+      z-index:200;
+      font-size:18px;
+    }
+
   </style>
 </head>
 <body>
 
 <header>
-  <h1>VT Shoppen</h1>
+  <h1>💎 VT Shoppen</h1>
   <nav>
-    <a href="#">Shop</a>
-    <a href="#login">Login</a>
+    <a onclick="adminLogin()">Admin</a>
+    <a href="#robux">Shop</a>
   </nav>
 </header>
 
 <div class="container">
 
-  <div class="login-box" id="login">
-    <h2>Login</h2>
-    <input type="text" id="username" placeholder="Brugernavn">
-    <input type="password" id="password" placeholder="Kodeord">
-    <button onclick="login()">Login</button>
+  <div class="login">
+    <h3>Login</h3>
+    <input id="username" placeholder="Brugernavn" />
+    <input id="password" type="password" placeholder="Kodeord" />
+    <button class="btn" onclick="login()">Login</button>
   </div>
 
-  <h2>Twitch Followers</h2>
-  <div class="grid">
-    <div class="card"><h2>1.000</h2><p>7 DKK</p><button onclick="buy('twitch1000',7)">Køb</button></div>
-    <div class="card"><h2>2.000</h2><p>14 DKK</p><button onclick="buy('twitch2000',14)">Køb</button></div>
-    <div class="card"><h2>3.000</h2><p>21 DKK</p><button onclick="buy('twitch3000',21)">Køb</button></div>
-  </div>
+  <h2>💎 Robux Shop</h2>
 
-  <h2 style="margin-top:40px;">Roblox Followers</h2>
   <div class="grid">
-    <div class="card"><h2>1.000</h2><p>14 DKK</p><button onclick="buy('roblox1000',14)">Køb</button></div>
-    <div class="card"><h2>2.000</h2><p>28 DKK</p><button onclick="buy('roblox2000',28)">Køb</button></div>
+
+    <div class="card"><h3>1000 Robux</h3><div class="price">45 DKK</div><button class="btn" onclick="openCheckout('Robux 1000',45)">Køb</button></div>
+
+    <div class="card"><h3>2000 Robux</h3><div class="price">87 DKK</div><button class="btn" onclick="openCheckout('Robux 2000',87)">Køb</button></div>
+
+    <div class="card"><h3>10000 Robux</h3><div class="price">420 DKK</div><div class="badge warn">🔥 BEST</div><button class="btn" onclick="openCheckout('Robux 10000',420)">Køb</button></div>
+
   </div>
 
 </div>
 
+<!-- CHECKOUT MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3 id="productName">Produkt</h3>
+    <p id="productPrice"></p>
+
+    <input id="coupon" placeholder="Coupon kode" />
+
+    <button class="btn" onclick="pay()">Betal nu</button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading" id="loading">⏳ Processing...</div>
+
+<!-- AUDIO -->
+<audio id="sound" src="https://www.myinstants.com/media/sounds/money.mp3"></audio>
+
 <script>
-  function login() {
-    const user = document.getElementById('username').value;
-    localStorage.setItem('user', user);
-    alert('Logget ind som ' + user);
-  }
 
-  async function buy(product, price) {
-    const res = await fetch('https://din-backend-url.com/create-checkout-session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product, price })
-    });
+let selectedPrice=0;
+let selectedProduct="";
 
-    const data = await res.json();
-    const stripe = Stripe('DIN_PUBLIC_KEY');
-    stripe.redirectToCheckout({ sessionId: data.id });
+function login(){
+  localStorage.setItem('user',document.getElementById('username').value);
+  alert("Logget ind");
+}
+
+function openCheckout(name,price){
+  selectedProduct=name;
+  selectedPrice=price;
+
+  document.getElementById('productName').innerText=name;
+  document.getElementById('productPrice').innerText=price+" DKK";
+  document.getElementById('modal').style.display="flex";
+}
+
+function applyCoupon(price){
+  const code=document.getElementById('coupon').value;
+  if(code=="VT10") return price*0.9;
+  if(code=="VT20") return price*0.8;
+  return price;
+}
+
+async function pay(){
+
+  document.getElementById('loading').style.display="flex";
+
+  let finalPrice=applyCoupon(selectedPrice);
+
+  document.getElementById('sound').play();
+
+  const res=await fetch('https://din-backend-url.com/create-checkout-session',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({product:selectedProduct,price:finalPrice})
+  });
+
+  const data=await res.json();
+
+  const stripe=Stripe('DIN_PUBLIC_KEY');
+  stripe.redirectToCheckout({sessionId:data.id});
+}
+
+function adminLogin(){
+  const pass=prompt("Admin password?");
+  if(pass=="admin123"){
+    alert("Admin panel unlocked (placeholder)");
+  }else{
+    alert("Wrong password");
   }
+}
+
 </script>
 
 </body>
