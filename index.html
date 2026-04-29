@@ -1,4 +1,4 @@
-x<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="da">
 <head>
   <meta charset="UTF-8" />
@@ -23,14 +23,6 @@ x<!DOCTYPE html>
       font-family:Poppins,sans-serif;
       background:var(--bg);
       color:#fff;
-      overflow-x:hidden;
-    }
-
-    /* PARTICLES */
-    #particles{
-      position:fixed;
-      inset:0;
-      z-index:-1;
     }
 
     header{
@@ -42,7 +34,6 @@ x<!DOCTYPE html>
       border-bottom:1px solid var(--stroke);
       position:sticky;
       top:0;
-      z-index:10;
     }
 
     .logo{
@@ -52,221 +43,136 @@ x<!DOCTYPE html>
       -webkit-text-fill-color:transparent;
     }
 
-    nav button{
-      background:none;
-      border:none;
-      color:#aaa;
-      margin:0 8px;
+    .cart{
       cursor:pointer;
+      background:var(--card);
+      padding:8px 12px;
+      border-radius:10px;
+      border:1px solid var(--stroke);
     }
-
-    nav button:hover{color:#fff;}
 
     .container{max-width:1100px;margin:auto;padding:20px;}
 
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:15px;margin-top:20px;}
+    h2{margin:20px 0;}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:15px;}
 
     .card{
       background:var(--card);
       border:1px solid var(--stroke);
       padding:15px;
       border-radius:15px;
-      transition:.3s;
-      animation:fade .4s ease;
-    }
-
-    .card:hover{transform:translateY(-5px);}
-
-    @keyframes fade{
-      from{opacity:0;transform:translateY(10px)}
-      to{opacity:1;transform:translateY(0)}
     }
 
     .btn{
-      width:100%;padding:10px;margin-top:10px;
-      border:none;border-radius:10px;
+      width:100%;
+      padding:10px;
+      margin-top:10px;
+      border:none;
+      border-radius:10px;
       background:linear-gradient(90deg,var(--accent),var(--accent2));
-      color:#fff;cursor:pointer;
+      color:#fff;
+      cursor:pointer;
     }
 
-    /* CHECKOUT STEPS */
-    .modal{
-      display:none;
+    /* CART */
+    .cartBox{
       position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.7);
-      align-items:center;
-      justify-content:center;
-    }
-
-    .box{
-      width:350px;
+      right:20px;
+      top:70px;
+      width:280px;
       background:#0b122a;
-      padding:20px;
-      border-radius:15px;
       border:1px solid var(--stroke);
-      animation:fade .3s ease;
-    }
-
-    .step{display:none;}
-    .step.active{display:block;}
-
-    input{
-      width:100%;padding:10px;margin-top:10px;
-      border:none;border-radius:10px;
-    }
-
-    /* ADMIN */
-    #admin{
+      border-radius:15px;
+      padding:15px;
       display:none;
     }
+
+    .item{font-size:14px;margin:5px 0;}
 
   </style>
 </head>
 <body>
 
-<canvas id="particles"></canvas>
-
 <header>
   <div class="logo">💎 VT Shoppen</div>
-  <nav>
-    <button onclick="show('shop')">Shop</button>
-    <button onclick="show('twitch')">Twitch</button>
-    <button onclick="show('roblox')">Roblox</button>
-    <button onclick="show('robux')">Robux</button>
-    <button onclick="openAdmin()">Admin</button>
-  </nav>
+  <div class="cart" onclick="toggleCart()">🛒 Kurv (<span id="count">0</span>)</div>
 </header>
 
 <div class="container">
 
-  <!-- SHOP -->
-  <div id="shop">
-    <h2>🔥 Kategorier</h2>
-    <div class="grid">
-      <div class="card">📡 Twitch<button class="btn" onclick="show('twitch')">Åbn</button></div>
-      <div class="card">🎮 Roblox<button class="btn" onclick="show('roblox')">Åbn</button></div>
-      <div class="card">💎 Robux<button class="btn" onclick="show('robux')">Åbn</button></div>
-    </div>
+  <h2>🔥 Twitch Followers</h2>
+  <div class="grid">
+    <div class="card">1.000 – 7 DKK<button class="btn" onclick="add('Twitch 1000',7)">Tilføj</button></div>
+    <div class="card">2.000 – 14 DKK<button class="btn" onclick="add('Twitch 2000',14)">Tilføj</button></div>
+    <div class="card">3.000 – 21 DKK<button class="btn" onclick="add('Twitch 3000',21)">Tilføj</button></div>
+    <div class="card">4.000 – 28 DKK<button class="btn" onclick="add('Twitch 4000',28)">Tilføj</button></div>
+    <div class="card">5.000 – 35 DKK<button class="btn" onclick="add('Twitch 5000',35)">Tilføj</button></div>
   </div>
 
-  <!-- TWITCH -->
-  <div id="twitch" style="display:none">
-    <h2>Twitch</h2>
-    <div class="grid">
-      <div class="card">1000 - 7DKK<button class="btn" onclick="checkout('Twitch 1000',7)">Køb</button></div>
-      <div class="card">2000 - 14DKK<button class="btn" onclick="checkout('Twitch 2000',14)">Køb</button></div>
-    </div>
+  <h2>🎮 Roblox Followers (2x Twitch)</h2>
+  <div class="grid">
+    <div class="card">1.000 – 14 DKK<button class="btn" onclick="add('Roblox 1000',14)">Tilføj</button></div>
+    <div class="card">2.000 – 28 DKK<button class="btn" onclick="add('Roblox 2000',28)">Tilføj</button></div>
+    <div class="card">3.000 – 42 DKK<button class="btn" onclick="add('Roblox 3000',42)">Tilføj</button></div>
+    <div class="card">4.000 – 56 DKK<button class="btn" onclick="add('Roblox 4000',56)">Tilføj</button></div>
+    <div class="card">5.000 – 70 DKK<button class="btn" onclick="add('Roblox 5000',70)">Tilføj</button></div>
   </div>
 
-  <!-- ROBLOX -->
-  <div id="roblox" style="display:none">
-    <h2>Roblox</h2>
-    <div class="grid">
-      <div class="card">1000 - 14DKK<button class="btn" onclick="checkout('Roblox 1000',14)">Køb</button></div>
-    </div>
-  </div>
-
-  <!-- ROBUX -->
-  <div id="robux" style="display:none">
-    <h2>Robux</h2>
-    <div class="grid">
-      <div class="card">1000 - 45DKK<button class="btn" onclick="checkout('Robux 1000',45)">Køb</button></div>
-      <div class="card">10000 - 420DKK<button class="btn" onclick="checkout('Robux 10000',420)">🔥 Best</button></div>
-    </div>
+  <h2>💎 Robux</h2>
+  <div class="grid">
+    <div class="card">1000 – 45 DKK<button class="btn" onclick="add('Robux 1000',45)">Tilføj</button></div>
+    <div class="card">2000 – 87 DKK<button class="btn" onclick="add('Robux 2000',87)">Tilføj</button></div>
+    <div class="card">3000 – 125 DKK<button class="btn" onclick="add('Robux 3000',125)">Tilføj</button></div>
+    <div class="card">4000 – 167 DKK<button class="btn" onclick="add('Robux 4000',167)">Tilføj</button></div>
+    <div class="card">5000 – 215 DKK<button class="btn" onclick="add('Robux 5000',215)">Tilføj</button></div>
+    <div class="card">10000 – 420 DKK<button class="btn" onclick="add('Robux 10000',420)">Tilføj</button></div>
+    <div class="card">100000 – 4150 DKK<button class="btn" onclick="add('Robux 100000',4150)">Tilføj</button></div>
   </div>
 
 </div>
 
-<!-- CHECKOUT -->
-<div class="modal" id="modal">
-  <div class="box">
-
-    <div class="step active" id="step1">
-      <h3>🧾 Produkt</h3>
-      <p id="pname"></p>
-      <button class="btn" onclick="next(2)">Videre</button>
-    </div>
-
-    <div class="step" id="step2">
-      <h3>🎁 Coupon</h3>
-      <input id="coupon" placeholder="Kode" />
-      <button class="btn" onclick="next(3)">Videre</button>
-    </div>
-
-    <div class="step" id="step3">
-      <h3>💳 Betal</h3>
-      <button class="btn" onclick="pay()">Stripe Checkout</button>
-    </div>
-
-  </div>
+<!-- CART -->
+<div class="cartBox" id="cartBox">
+  <h3>🛒 Kurv</h3>
+  <div id="items"></div>
+  <hr style="margin:10px 0; border-color:#333">
+  <div>Total: <span id="total">0</span> DKK</div>
+  <button class="btn" onclick="checkout()">Checkout</button>
 </div>
-
-<!-- ADMIN -->
-<div id="admin" class="container">
-  <h2>📊 Admin Dashboard</h2>
-  <div class="card">
-    <p>Orders: 0 (demo)</p>
-    <p>Revenue: 0 DKK</p>
-  </div>
-</div>
-
-<audio id="click" src="https://www.myinstants.com/media/sounds/mouse-click.mp3"></audio>
 
 <script>
 
-let product="";
-let price=0;
+let cart=[];
 
-function sound(){document.getElementById('click').play();}
-
-function show(id){
-  sound();
-  document.querySelectorAll('.container > div').forEach(d=>d.style.display='none');
-  document.getElementById(id).style.display='block';
+function add(name,price){
+  cart.push({name,price});
+  update();
 }
 
-function checkout(p,pr){
-  product=p;price=pr;
-  document.getElementById('pname').innerText=p+" - "+pr+" DKK";
-  document.getElementById('modal').style.display='flex';
-}
+function update(){
+  document.getElementById('count').innerText=cart.length;
 
-function next(s){sound();document.querySelectorAll('.step').forEach(e=>e.classList.remove('active'));document.getElementById('step'+s).classList.add('active');}
+  let html='';
+  let total=0;
 
-function applyCoupon(p){
-  let c=document.getElementById('coupon').value;
-  if(c==='VT10')return p*0.9;
-  if(c==='VT20')return p*0.8;
-  return p;
-}
-
-async function pay(){
-  sound();
-  let final=applyCoupon(price);
-
-  const res=await fetch('https://din-backend-url.com/create-checkout-session',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({product,price:final})
+  cart.forEach(i=>{
+    html+=`<div class='item'>${i.name} - ${i.price} DKK</div>`;
+    total+=i.price;
   });
 
-  const data=await res.json();
-  const stripe=Stripe('DIN_PUBLIC_KEY');
-  stripe.redirectToCheckout({sessionId:data.id});
+  document.getElementById('items').innerHTML=html;
+  document.getElementById('total').innerText=total;
 }
 
-function openAdmin(){
-  let p=prompt('Admin password');
-  if(p==='admin123'){
-    show('admin');
-  }
+function toggleCart(){
+  let c=document.getElementById('cartBox');
+  c.style.display=c.style.display==='block'?'none':'block';
 }
 
-/* SIMPLE PARTICLES */
-const c=document.getElementById('particles');const x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
-let pts=Array.from({length:60},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*2}));
-function draw(){x.clearRect(0,0,c.width,c.height);x.fillStyle='rgba(255,255,255,0.5)';pts.forEach(p=>{p.y+=0.3;if(p.y>c.height)p.y=0;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fill();});requestAnimationFrame(draw);}draw();
+function checkout(){
+  alert('Sender til betaling... (Stripe backend kræves)');
+}
 
 </script>
 
