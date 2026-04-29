@@ -3,89 +3,104 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Min Moderne Hjemmeside</title>
+  <title>VT Shoppen</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
-    .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
+    body { transition: background 0.4s, color 0.4s; }
+    .fade-up { opacity: 0; transform: translateY(40px); transition: all 0.8s ease; }
     .fade-up.show { opacity: 1; transform: translateY(0); }
+    .parallax { background-attachment: fixed; background-size: cover; background-position: center; }
+
+    #loader { position: fixed; inset: 0; background: black; display: flex; align-items: center; justify-content: center; z-index: 9999; }
+    .spinner { width: 50px; height: 50px; border: 4px solid #444; border-top: 4px solid white; border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
   </style>
 </head>
+
 <body class="bg-black text-white font-sans">
 
-  <!-- Navbar -->
-  <nav class="flex justify-between items-center p-6 max-w-6xl mx-auto">
-    <h1 class="text-2xl font-semibold tracking-tight">MitSite</h1>
-    <div class="space-x-6 text-sm">
-      <a href="#" class="hover:text-gray-400">Hjem</a>
-      <a href="#projekter" class="hover:text-gray-400">Projekter</a>
-      <a href="#kontakt" class="hover:text-gray-400">Kontakt</a>
-    </div>
-  </nav>
+<div id="loader"><div class="spinner"></div></div>
 
-  <!-- Hero -->
-  <section class="text-center py-32 fade-up">
-    <h2 class="text-6xl font-semibold mb-6 tracking-tight">Bygget simpelt.
-      <br>Ser avanceret ud.</h2>
-    <p class="text-gray-500 max-w-xl mx-auto mb-8 text-lg">
-      En moderne hjemmeside med smooth animationer og clean design.
-    </p>
-    <button class="bg-white text-black px-8 py-3 rounded-full hover:scale-105 transition">
-      Se projekter
-    </button>
-  </section>
+<nav class="flex justify-between items-center p-6 max-w-6xl mx-auto">
+  <h1 class="text-xl font-semibold">VT Shoppen</h1>
+  <button onclick="toggleMode()">🌙</button>
+</nav>
 
-  <!-- Info section (ikke "om mig", bare content) -->
-  <section class="max-w-4xl mx-auto text-center py-24 px-6 fade-up">
-    <h3 class="text-4xl font-semibold mb-6">Design der føles hurtigt</h3>
-    <p class="text-gray-500 text-lg">
-      Fokus på performance, minimalisme og moderne UI.
-      Alt er bygget til at se smooth ud og føles hurtigt.
-    </p>
-  </section>
+<section class="parallax text-center py-40 fade-up" style="background-image:url('https://images.unsplash.com/photo-1511512578047-dfb367046420');">
+  <h2 class="text-5xl font-bold mb-6">Boost din konto 🚀</h2>
+  <p class="text-gray-300">Twitch • Roblox • Robux</p>
+</section>
 
-  <!-- Projekter -->
-  <section id="projekter" class="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-3 gap-8">
-    <div class="fade-up bg-zinc-900 p-6 rounded-2xl hover:scale-105 transition">
-      <h4 class="text-xl mb-2">Projekt A</h4>
-      <p class="text-gray-500">Beskrivelse af dit projekt.</p>
-    </div>
+<section class="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-3 gap-8">
 
-    <div class="fade-up bg-zinc-900 p-6 rounded-2xl hover:scale-105 transition">
-      <h4 class="text-xl mb-2">Projekt B</h4>
-      <p class="text-gray-500">Beskrivelse af dit projekt.</p>
-    </div>
+  <div class="fade-up bg-zinc-900 p-6 rounded-2xl">
+    <h3>Twitch Followers</h3>
+    <p class="text-gray-400">100 followers</p>
+    <p class="text-2xl">49 kr</p>
+    <button onclick="buy('Twitch 100')" class="bg-white text-black px-4 py-2 rounded mt-3">Køb</button>
+  </div>
 
-    <div class="fade-up bg-zinc-900 p-6 rounded-2xl hover:scale-105 transition">
-      <h4 class="text-xl mb-2">Projekt C</h4>
-      <p class="text-gray-500">Beskrivelse af dit projekt.</p>
-    </div>
-  </section>
+  <div class="fade-up bg-zinc-900 p-6 rounded-2xl">
+    <h3>Roblox Followers</h3>
+    <p class="text-gray-400">200 followers</p>
+    <p class="text-2xl">59 kr</p>
+    <button onclick="buy('Roblox 200')" class="bg-white text-black px-4 py-2 rounded mt-3">Køb</button>
+  </div>
 
-  <!-- CTA -->
-  <section id="kontakt" class="text-center py-24 fade-up">
-    <h3 class="text-3xl mb-6">Klar til mere?</h3>
-    <button class="border border-white px-8 py-3 rounded-full hover:bg-white hover:text-black transition">
-      Kontakt mig
-    </button>
-  </section>
+  <div class="fade-up bg-zinc-900 p-6 rounded-2xl">
+    <h3>Robux</h3>
+    <p class="text-gray-400">1000 Robux</p>
+    <p class="text-2xl">79 kr</p>
+    <button onclick="buy('Robux 1000')" class="bg-white text-black px-4 py-2 rounded mt-3">Køb</button>
+  </div>
 
-  <!-- Footer -->
-  <footer class="text-center py-6 border-t border-gray-800 text-gray-600 text-sm">
-    © 2026 MitSite
-  </footer>
+</section>
 
-  <!-- Scroll animation script -->
-  <script>
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('show');
-        }
-      });
+<!-- Reviews -->
+<section class="max-w-4xl mx-auto text-center py-20 fade-up">
+  <h3 class="text-3xl mb-10">Hvad kunder siger ⭐</h3>
+  <div class="space-y-6 text-gray-400">
+    <p>"Fik followers på 5 min 🔥"</p>
+    <p>"Virker legit, anbefales"</p>
+    <p>"God service og hurtig levering"</p>
+  </div>
+</section>
+
+<footer class="text-center py-6 border-t border-gray-800 text-gray-600 text-sm">
+  © 2026 VT Shoppen
+</footer>
+
+<script>
+  window.onload = () => document.getElementById('loader').style.display = 'none';
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('show'); });
+  });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  function toggleMode() {
+    document.body.classList.toggle('bg-white');
+    document.body.classList.toggle('text-black');
+  }
+
+  // Fake checkout UI (Stripe/MobilePay style)
+  function buy(product) {
+    const username = prompt("Indtast dit brugernavn:");
+    if (!username) return;
+
+    alert("Du bliver sendt til betaling (demo)");
+
+    // Discord webhook
+    fetch("DIN_WEBHOOK_URL_HER", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: `Ny ordre:\nProdukt: ${product}\nBruger: ${username}`
+      })
     });
-
-    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-  </script>
+  }
+</script>
 
 </body>
 </html>
