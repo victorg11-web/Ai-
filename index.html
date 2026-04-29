@@ -9,16 +9,13 @@
 
   <style>
     :root{
-      --bg:#0b0f17;
-      --panel:#111827;
-      --card:#0f172a;
+      --bg:#0a0f1c;
+      --panel:#0f172a;
+      --card:#111827;
       --border:#1f2937;
       --text:#e5e7eb;
       --muted:#9ca3af;
-      --accent:#3b82f6;
-      --accent2:#6366f1;
-      --danger:#ef4444;
-      --success:#22c55e;
+      --accent:#2563eb;
     }
 
     *{margin:0;padding:0;box-sizing:border-box;}
@@ -29,12 +26,11 @@
       color:var(--text);
     }
 
-    /* TOPBAR */
     header{
       position:sticky;
       top:0;
       z-index:10;
-      background:rgba(17,24,39,0.9);
+      background:rgba(15,23,42,0.9);
       backdrop-filter:blur(10px);
       border-bottom:1px solid var(--border);
     }
@@ -48,10 +44,7 @@
       padding:14px 20px;
     }
 
-    .logo{
-      font-weight:700;
-      letter-spacing:0.5px;
-    }
+    .logo{font-weight:700;letter-spacing:.5px;}
 
     .menu button{
       background:none;
@@ -72,14 +65,9 @@
       cursor:pointer;
     }
 
-    /* LAYOUT */
-    .container{
-      max-width:1200px;
-      margin:auto;
-      padding:30px 20px;
-    }
+    .container{max-width:1200px;margin:auto;padding:30px 20px;}
 
-    h1,h2{margin-bottom:15px;}
+    h2{margin:20px 0;}
 
     .grid{
       display:grid;
@@ -87,18 +75,11 @@
       gap:16px;
     }
 
-    /* CARD */
     .card{
       background:var(--card);
       border:1px solid var(--border);
       border-radius:14px;
       padding:16px;
-      transition:.2s;
-    }
-
-    .card:hover{
-      transform:translateY(-3px);
-      border-color:#334155;
     }
 
     .title{font-weight:600;}
@@ -110,15 +91,12 @@
       padding:10px;
       border:none;
       border-radius:10px;
-      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      background:var(--accent);
       color:white;
       cursor:pointer;
       font-weight:600;
     }
 
-    .btn:hover{opacity:0.9;}
-
-    /* CART */
     .cart{
       position:fixed;
       right:20px;
@@ -131,20 +109,9 @@
       display:none;
     }
 
-    .item{
-      display:flex;
-      justify-content:space-between;
-      font-size:14px;
-      margin:6px 0;
-      color:var(--muted);
-    }
+    .item{display:flex;justify-content:space-between;font-size:14px;margin:6px 0;color:var(--muted);}
+    .total{margin-top:10px;font-weight:600;}
 
-    .total{
-      margin-top:10px;
-      font-weight:600;
-    }
-
-    /* AUTH */
     .auth{
       max-width:360px;
       margin:60px auto;
@@ -164,8 +131,6 @@
       color:white;
       outline:none;
     }
-
-    .muted{color:var(--muted);font-size:13px;}
 
   </style>
 </head>
@@ -187,48 +152,43 @@
 
 <div class="container">
 
-  <!-- AUTH -->
-  <div id="auth" class="auth">
-    <h2>Login</h2>
-    <p class="muted">Opret eller login for at fortsætte</p>
-    <input id="email" placeholder="Email" />
-    <input id="pass" type="password" placeholder="Password" />
-    <button class="btn" onclick="login()">Login</button>
-    <button class="btn" onclick="signup()">Opret konto</button>
-  </div>
-
-  <!-- TWITCH -->
-  <div id="twitch" style="display:none">
-    <h2>Twitch Followers</h2>
+  <div id="twitch">
+    <h2>🔥 Twitch Followers</h2>
     <div class="grid">
-      <div class="card"><div class="title">1.000 Followers</div><div class="price">7 DKK</div><button class="btn" onclick="add('Twitch 1k',7)">Tilføj</button></div>
-      <div class="card"><div class="title">2.000 Followers</div><div class="price">14 DKK</div><button class="btn" onclick="add('Twitch 2k',14)">Tilføj</button></div>
-      <div class="card"><div class="title">5.000 Followers</div><div class="price">35 DKK</div><button class="btn" onclick="add('Twitch 5k',35)">Tilføj</button></div>
+      <div class="card"><div class="title">1.000</div><div class="price">7 DKK</div><button class="btn" onclick="add('Twitch 1k',7)">Tilføj</button></div>
+      <div class="card"><div class="title">2.000</div><div class="price">14 DKK</div><button class="btn" onclick="add('Twitch 2k',14)">Tilføj</button></div>
+      <div class="card"><div class="title">3.000</div><div class="price">21 DKK</div><button class="btn" onclick="add('Twitch 3k',21)">Tilføj</button></div>
+      <div class="card"><div class="title">4.000</div><div class="price">28 DKK</div><button class="btn" onclick="add('Twitch 4k',28)">Tilføj</button></div>
+      <div class="card"><div class="title">5.000</div><div class="price">35 DKK</div><button class="btn" onclick="add('Twitch 5k',35)">Tilføj</button></div>
     </div>
   </div>
 
-  <!-- ROBLOX -->
   <div id="roblox" style="display:none">
-    <h2>Roblox Followers</h2>
+    <h2>🎮 Roblox Followers</h2>
     <div class="grid">
-      <div class="card"><div class="title">1.000 Followers</div><div class="price">14 DKK</div><button class="btn" onclick="add('Roblox 1k',14)">Tilføj</button></div>
-      <div class="card"><div class="title">2.000 Followers</div><div class="price">28 DKK</div><button class="btn" onclick="add('Roblox 2k',28)">Tilføj</button></div>
-      <div class="card"><div class="title">5.000 Followers</div><div class="price">70 DKK</div><button class="btn" onclick="add('Roblox 5k',70)">Tilføj</button></div>
+      <div class="card"><div class="title">1.000</div><div class="price">14 DKK</div><button class="btn" onclick="add('Roblox 1k',14)">Tilføj</button></div>
+      <div class="card"><div class="title">2.000</div><div class="price">28 DKK</div><button class="btn" onclick="add('Roblox 2k',28)">Tilføj</button></div>
+      <div class="card"><div class="title">3.000</div><div class="price">42 DKK</div><button class="btn" onclick="add('Roblox 3k',42)">Tilføj</button></div>
+      <div class="card"><div class="title">4.000</div><div class="price">56 DKK</div><button class="btn" onclick="add('Roblox 4k',56)">Tilføj</button></div>
+      <div class="card"><div class="title">5.000</div><div class="price">70 DKK</div><button class="btn" onclick="add('Roblox 5k',70)">Tilføj</button></div>
     </div>
   </div>
 
-  <!-- ROBUX -->
   <div id="robux" style="display:none">
-    <h2>Robux</h2>
+    <h2>💎 Robux</h2>
     <div class="grid">
-      <div class="card"><div class="title">1.000 Robux</div><div class="price">45 DKK</div><button class="btn" onclick="add('Robux 1k',45)">Tilføj</button></div>
-      <div class="card"><div class="title">10.000 Robux</div><div class="price">420 DKK</div><button class="btn" onclick="add('Robux 10k',420)">Tilføj</button></div>
+      <div class="card"><div class="title">1000</div><div class="price">45 DKK</div><button class="btn" onclick="add('Robux 1k',45)">Tilføj</button></div>
+      <div class="card"><div class="title">2000</div><div class="price">87 DKK</div><button class="btn" onclick="add('Robux 2k',87)">Tilføj</button></div>
+      <div class="card"><div class="title">3000</div><div class="price">125 DKK</div><button class="btn" onclick="add('Robux 3k',125)">Tilføj</button></div>
+      <div class="card"><div class="title">4000</div><div class="price">167 DKK</div><button class="btn" onclick="add('Robux 4k',167)">Tilføj</button></div>
+      <div class="card"><div class="title">5000</div><div class="price">215 DKK</div><button class="btn" onclick="add('Robux 5k',215)">Tilføj</button></div>
+      <div class="card"><div class="title">10000</div><div class="price">420 DKK</div><button class="btn" onclick="add('Robux 10k',420)">Tilføj</button></div>
+      <div class="card"><div class="title">100000</div><div class="price">4150 DKK</div><button class="btn" onclick="add('Robux 100k',4150)">Tilføj</button></div>
     </div>
   </div>
 
 </div>
 
-<!-- CART -->
 <div class="cart" id="cart">
   <h3>Kurv</h3>
   <div id="items"></div>
@@ -237,7 +197,6 @@
 </div>
 
 <script>
-
 let cart=[];
 
 function show(id){
@@ -270,17 +229,7 @@ function toggleCart(){
   c.style.display=c.style.display==='block'?'none':'block';
 }
 
-function login(){
-  document.getElementById('auth').style.display='none';
-  show('twitch');
-}
-
-function signup(){
-  login();
-}
-
 show('twitch');
-
 </script>
 
 </body>
