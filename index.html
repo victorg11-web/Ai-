@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DripFinder AI</title>
+  <title>VisionAI Studio</title>
 
-  <meta name="description" content="Find tøj med AI. Søg efter outfits, sneakers og fashion items på sekunder.">
-  <meta name="keywords" content="AI fashion finder, tøj søgemaskine, outfit finder, sneakers finder">
+  <meta name="description" content="Generér AI billeder, thumbnails og content med ét klik.">
+  <meta name="keywords" content="AI image generator, AI thumbnails, thumbnail maker, AI art">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,6 +33,7 @@
       background:
       radial-gradient(circle at top left, rgba(255,0,128,0.25), transparent 30%),
       radial-gradient(circle at bottom right, rgba(0,162,255,0.22), transparent 30%),
+      radial-gradient(circle at center, rgba(140,0,255,0.15), transparent 35%),
       #050505;
       z-index: -2;
     }
@@ -52,7 +53,7 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .premium {
+    .premium-btn {
       background: linear-gradient(90deg,#ff0080,#ff5e00);
       border: none;
       padding: 14px 22px;
@@ -64,21 +65,22 @@
     }
 
     .hero {
-      min-height: 90vh;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
       padding: 60px 8%;
+      text-align: center;
     }
 
     .hero-content {
-      max-width: 950px;
+      max-width: 1100px;
+      width: 100%;
     }
 
     .tag {
       display: inline-block;
-      padding: 12px 18px;
+      padding: 12px 20px;
       border-radius: 999px;
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.08);
@@ -103,70 +105,68 @@
 
     .hero p {
       color: rgba(255,255,255,0.7);
-      line-height: 1.8;
       font-size: 1.2rem;
+      line-height: 1.8;
       max-width: 700px;
       margin: auto auto 40px;
     }
 
-    .search-box {
+    .generator-box {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 35px;
-      padding: 30px;
+      padding: 35px;
       backdrop-filter: blur(20px);
-      max-width: 900px;
-      margin: auto;
       box-shadow: 0 30px 80px rgba(0,0,0,0.5);
     }
 
-    input {
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    input, select {
       width: 100%;
-      padding: 22px;
-      border-radius: 20px;
+      padding: 18px;
+      border-radius: 18px;
       border: 1px solid rgba(255,255,255,0.08);
       background: rgba(255,255,255,0.06);
       color: white;
-      font-size: 1.1rem;
+      font-size: 1rem;
       outline: none;
-      margin-bottom: 20px;
     }
 
-    input::placeholder {
-      color: rgba(255,255,255,0.35);
+    select option {
+      background: #111;
     }
 
-    .buttons {
-      display: flex;
-      gap: 15px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .search-btn {
+    .generate-btn {
+      width: 100%;
       background: linear-gradient(90deg,#ff0080,#ff5e00);
       border: none;
+      padding: 20px;
+      border-radius: 20px;
       color: white;
-      padding: 16px 30px;
-      border-radius: 18px;
+      font-size: 1.1rem;
+      font-weight: 800;
       cursor: pointer;
-      font-size: 1rem;
-      font-weight: 700;
       transition: 0.3s;
+      margin-bottom: 30px;
     }
 
-    .search-btn:hover {
-      transform: scale(1.05);
+    .generate-btn:hover {
+      transform: scale(1.02);
     }
 
-    .results {
-      margin-top: 35px;
+    .gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+      gap: 25px;
     }
 
-    .card {
+    .image-card {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 25px;
@@ -174,43 +174,38 @@
       transition: 0.3s ease;
     }
 
-    .card:hover {
+    .image-card:hover {
       transform: translateY(-8px);
       box-shadow: 0 20px 50px rgba(255,0,128,0.15);
     }
 
-    .card img {
+    .image-card img {
       width: 100%;
-      height: 280px;
+      height: 320px;
       object-fit: cover;
     }
 
-    .card-content {
+    .image-content {
       padding: 20px;
     }
 
-    .card h3 {
+    .image-content h3 {
       margin-bottom: 10px;
-      font-size: 1.1rem;
     }
 
-    .card p {
-      color: rgba(255,255,255,0.6);
-      margin-bottom: 20px;
-    }
-
-    .buy-btn {
+    .download-btn {
       display: inline-block;
+      margin-top: 15px;
       background: linear-gradient(90deg,#00c3ff,#0066ff);
-      padding: 12px 20px;
-      border-radius: 14px;
-      text-decoration: none;
       color: white;
+      text-decoration: none;
+      padding: 12px 18px;
+      border-radius: 14px;
       font-weight: 700;
     }
 
     .pro-box {
-      margin-top: 60px;
+      margin-top: 50px;
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 30px;
@@ -242,40 +237,53 @@
 <div class="bg"></div>
 
 <header>
-  <div class="logo">DripFinder AI</div>
-  <button class="premium" onclick="upgradePro()">💎 Premium</button>
+  <div class="logo">VisionAI Studio</div>
+  <button class="premium-btn" onclick="upgradePro()">💎 Premium</button>
 </header>
 
 <section class="hero">
   <div class="hero-content">
 
-    <div class="tag">🔥 AI Fashion Search Engine</div>
+    <div class="tag">🔥 AI Image & Thumbnail Generator</div>
 
-    <h1>Find præcis det <span>tøj</span><br>du leder efter</h1>
+    <h1>Generér virale <span>billeder</span><br>og thumbnails med AI</h1>
 
     <p>
-      Søg efter sneakers, hoodies, outfits eller styles — og få links til produkter med det samme.
+      Vælg type, skriv din idé og få AI-genererede billeder på få sekunder.
     </p>
 
-    <div class="search-box">
+    <div class="generator-box">
 
-      <input id="searchInput" placeholder="Søg fx: blå nike hoodie, baggy jeans, jordans...">
+      <div class="controls">
 
-      <div class="buttons">
-        <button class="search-btn" onclick="searchClothes()">🔍 Find Tøj</button>
+        <input id="promptInput" placeholder="Skriv fx: MrBeast thumbnail med eksplosiv tekst">
+
+        <select id="typeSelect">
+          <option>YouTube Thumbnail</option>
+          <option>TikTok Thumbnail</option>
+          <option>Gaming Banner</option>
+          <option>AI Art</option>
+          <option>Logo Design</option>
+          <option>Instagram Post</option>
+        </select>
+
       </div>
 
-      <div class="results" id="results"></div>
+      <button class="generate-btn" onclick="generateImages()">
+        🚀 Generér AI Billeder
+      </button>
+
+      <div class="gallery" id="gallery"></div>
 
       <div class="pro-box">
-        <h2>💎 DripFinder Premium</h2>
+        <h2>💎 VisionAI Premium</h2>
 
         <p>
-          Få adgang til premium fashion AI, billigste priser, hidden finds og hurtigere søgninger.
+          Få HD billeder, ubegrænsede generations, premium styles og hurtigere AI rendering.
         </p>
 
-        <button class="premium" onclick="upgradePro()">
-          Upgrade — 79 kr/måned
+        <button class="premium-btn" onclick="upgradePro()">
+          Upgrade — 99 kr/måned
         </button>
       </div>
 
@@ -285,65 +293,64 @@
 </section>
 
 <footer>
-  © 2026 DripFinder AI — Find fashion med AI
+  © 2026 VisionAI Studio — Powered by AI
 </footer>
 
 <script>
 
-async function searchClothes() {
+async function generateImages() {
 
-  const results = document.getElementById('results');
-  const input = document.getElementById('searchInput').value;
+  const prompt = document.getElementById('promptInput').value;
+  const type = document.getElementById('typeSelect').value;
+  const gallery = document.getElementById('gallery');
 
-  if(input.trim() === '') {
-    results.innerHTML = '<p>Skriv noget først 🔥</p>';
+  if(prompt.trim() === '') {
+    gallery.innerHTML = '<p>Skriv noget først 🔥</p>';
     return;
   }
 
-  results.innerHTML = '<p>AI søger på internettet efter tøj... 🔥</p>';
+  gallery.innerHTML = '<p>AI genererer billeder... 🚀</p>';
 
   // =====================================
-  // SERPAPI / SHOPPING API
+  // OPENAI IMAGE API
   // =====================================
 
-  // Opret API her:
-  // https://serpapi.com/
-
-  const API_KEY = '635ed4e1c7257c708ed2441424068ab95a0ae76fcf2d99ba0a5ffa0fa458c625';
+  const API_KEY = 'INDSÆT_DIN_OPENAI_KEY';
 
   try {
 
-    const response = await fetch(`https://serpapi.com/search.json?engine=google_shopping&q=${encodeURIComponent(input)}&api_key=${API_KEY}`);
+    const response = await fetch('https://api.openai.com/v1/images/generations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-image-1',
+        prompt: `${type}: ${prompt}`,
+        size: '1024x1024'
+      })
+    });
 
     const data = await response.json();
 
-    results.innerHTML = '';
+    gallery.innerHTML = '';
 
-    const products = data.shopping_results || [];
+    data.data.forEach(image => {
 
-    if(products.length === 0) {
-      results.innerHTML = '<p>Ingen produkter fundet 😭</p>';
-      return;
-    }
+      gallery.innerHTML += `
 
-    products.slice(0, 12).forEach(item => {
+      <div class="image-card">
 
-      results.innerHTML += `
+        <img src="data:image/png;base64,${image.b64_json}">
 
-      <div class="card">
+        <div class="image-content">
+          <h3>${type}</h3>
 
-        <img src="${item.thumbnail}">
+          <p>${prompt}</p>
 
-        <div class="card-content">
-          <h3>${item.title}</h3>
-
-          <p>
-            ${item.price || 'Pris ukendt'}<br><br>
-            🛍️ ${item.source || 'Webshop'}
-          </p>
-
-          <a href="${item.link}" target="_blank" class="buy-btn">
-            Køb Nu
+          <a class="download-btn" download="ai-image.png" href="data:image/png;base64,${image.b64_json}">
+            📥 Download
           </a>
         </div>
 
@@ -357,10 +364,10 @@ async function searchClothes() {
 
     console.log(error);
 
-    results.innerHTML = `
+    gallery.innerHTML = `
       <p>
-        Fejl ved AI søgning 😭<br><br>
-        Husk at indsætte din SERPAPI key.
+        Fejl ved AI generation 😭<br><br>
+        Husk at indsætte din OpenAI API key.
       </p>
     `;
   }
@@ -370,10 +377,9 @@ async function searchClothes() {
 function upgradePro() {
 
   // INDSÆT STRIPE CHECKOUT LINK HER
-  // EKSEMPEL:
   // window.location.href = 'https://buy.stripe.com/test_xxxxx';
 
-  alert('Indsæt dit Stripe checkout link her 💎');
+  alert('Indsæt dit Stripe checkout link 💎');
 }
 
 </script>
