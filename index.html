@@ -3,482 +3,456 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Resonate Store</title>
+  <title>PromptForge AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
     }
 
     body {
-      background: #050505;
+      font-family: 'Inter', sans-serif;
+      background: #050816;
       color: white;
       overflow-x: hidden;
     }
 
-    .navbar {
-      width: 100%;
-      padding: 20px 8%;
+    .bg {
       position: fixed;
-      top: 0;
-      left: 0;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(139,92,246,0.25), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(59,130,246,0.2), transparent 30%),
+        #050816;
+      z-index: -2;
+    }
+
+    .grid {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: -1;
+      mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+    }
+
+    header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(10px);
-      z-index: 1000;
+      padding: 24px 10%;
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(12px);
+      background: rgba(5,8,22,0.6);
       border-bottom: 1px solid rgba(255,255,255,0.08);
+      z-index: 100;
     }
 
     .logo {
-      font-size: 2rem;
-      font-weight: 900;
-      color: #3b82f6;
-      letter-spacing: 2px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: linear-gradient(90deg,#8b5cf6,#3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .nav-links {
-      display: flex;
-      gap: 30px;
-    }
-
-    .nav-links a {
-      color: white;
+    nav a {
+      color: rgba(255,255,255,0.8);
       text-decoration: none;
-      font-weight: 600;
+      margin-left: 24px;
       transition: 0.3s;
+      font-weight: 500;
     }
 
-    .nav-links a:hover {
-      color: #3b82f6;
+    nav a:hover {
+      color: white;
     }
 
     .hero {
       min-height: 100vh;
       display: flex;
       align-items: center;
-      padding: 0 8%;
-      background:
-        linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.6)),
-        url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1920&auto=format&fit=crop') center/cover;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 10%;
     }
 
     .hero-content {
-      max-width: 700px;
+      max-width: 900px;
     }
 
-    .tag {
+    .badge {
       display: inline-block;
-      background: rgba(59,130,246,0.15);
-      border: 1px solid rgba(59,130,246,0.4);
-      color: #60a5fa;
       padding: 10px 18px;
+      border: 1px solid rgba(255,255,255,0.12);
       border-radius: 999px;
-      margin-bottom: 25px;
-      font-weight: 700;
+      background: rgba(255,255,255,0.05);
+      margin-bottom: 24px;
+      color: #c4b5fd;
+      font-size: 0.95rem;
     }
 
-    .hero h1 {
-      font-size: 6rem;
-      line-height: 0.95;
-      font-weight: 900;
+    h1 {
+      font-size: clamp(3rem, 8vw, 6rem);
+      line-height: 1;
+      font-weight: 800;
+      margin-bottom: 24px;
     }
 
-    .hero h1 span {
-      color: #3b82f6;
+    h1 span {
+      background: linear-gradient(90deg,#8b5cf6,#3b82f6,#06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .hero p {
-      margin-top: 25px;
-      color: #b3b3b3;
+      color: rgba(255,255,255,0.72);
       font-size: 1.2rem;
       line-height: 1.7;
+      margin-bottom: 40px;
     }
 
-    .hero-buttons {
-      margin-top: 40px;
+    .buttons {
       display: flex;
-      gap: 20px;
+      gap: 16px;
+      justify-content: center;
       flex-wrap: wrap;
     }
 
     .btn {
-      padding: 16px 32px;
+      padding: 16px 28px;
       border-radius: 16px;
       border: none;
+      cursor: pointer;
       font-size: 1rem;
       font-weight: 700;
-      cursor: pointer;
       transition: 0.3s ease;
+      text-decoration: none;
     }
 
     .btn-primary {
-      background: #3b82f6;
+      background: linear-gradient(90deg,#8b5cf6,#3b82f6);
       color: white;
-      box-shadow: 0 0 30px rgba(59,130,246,0.35);
+      box-shadow: 0 10px 30px rgba(59,130,246,0.3);
     }
 
     .btn-primary:hover {
-      transform: translateY(-3px);
-      background: #2563eb;
+      transform: translateY(-4px);
     }
 
     .btn-secondary {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
       color: white;
     }
 
-    .btn-secondary:hover {
-      border-color: #3b82f6;
-    }
-
-    section {
-      padding: 120px 8%;
+    .section {
+      padding: 120px 10%;
     }
 
     .section-title {
-      margin-bottom: 60px;
-    }
-
-    .section-title p {
-      color: #3b82f6;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      margin-bottom: 10px;
+      text-align: center;
+      margin-bottom: 70px;
     }
 
     .section-title h2 {
-      font-size: 4rem;
-      font-weight: 900;
+      font-size: 3rem;
+      margin-bottom: 16px;
     }
 
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 30px;
-    }
-
-    .feature-card {
-      background: #101010;
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 40px;
-      border-radius: 24px;
-      transition: 0.3s;
-    }
-
-    .feature-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(59,130,246,0.5);
-    }
-
-    .feature-card h3 {
-      font-size: 1.6rem;
-      margin-bottom: 15px;
-    }
-
-    .feature-card p {
-      color: #9e9e9e;
+    .section-title p {
+      color: rgba(255,255,255,0.7);
+      max-width: 700px;
+      margin: auto;
       line-height: 1.7;
     }
 
-    .products {
-      background: #0b0b0b;
-    }
-
-    .product-grid {
+    .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
+      grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+      gap: 24px;
     }
 
-    .product-card {
-      background: #121212;
-      border-radius: 26px;
-      overflow: hidden;
+    .card {
+      background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.08);
-      transition: 0.3s;
+      border-radius: 28px;
+      padding: 32px;
+      transition: 0.3s ease;
+      backdrop-filter: blur(12px);
     }
 
-    .product-card:hover {
+    .card:hover {
       transform: translateY(-8px);
-      border-color: rgba(59,130,246,0.5);
+      border-color: rgba(139,92,246,0.5);
+      box-shadow: 0 20px 50px rgba(139,92,246,0.12);
     }
 
-    .product-image {
-      height: 240px;
-      background: linear-gradient(135deg, rgba(255,45,45,0.3), transparent);
+    .icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 18px;
+      background: linear-gradient(135deg,#8b5cf6,#3b82f6);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      font-weight: 900;
-      color: #3b82f6;
+      font-size: 1.4rem;
+      margin-bottom: 24px;
     }
 
-    .product-content {
-      padding: 30px;
+    .card h3 {
+      margin-bottom: 12px;
+      font-size: 1.3rem;
     }
 
-    .product-content h3 {
-      font-size: 2rem;
-      margin-bottom: 10px;
-    }
-
-    .price {
-      color: #3b82f6;
-      font-size: 1.5rem;
-      font-weight: 800;
-      margin-bottom: 18px;
-    }
-
-    .product-content p {
-      color: #a5a5a5;
+    .card p {
+      color: rgba(255,255,255,0.7);
       line-height: 1.7;
-      margin-bottom: 25px;
     }
 
-    .discord {
-      text-align: center;
-      background: linear-gradient(135deg, #0d1117, #07152b);
-      border-top: 1px solid rgba(255,255,255,0.08);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .discord h2 {
-      font-size: 4rem;
-      margin-bottom: 20px;
-    }
-
-    .discord p {
-      color: #a8a8a8;
-      max-width: 700px;
+    .generator {
+      max-width: 900px;
       margin: auto;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 30px;
+      padding: 40px;
+      backdrop-filter: blur(12px);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      resize: none;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      border-radius: 20px;
+      padding: 20px;
+      color: white;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      outline: none;
+    }
+
+    .output {
+      margin-top: 30px;
+      background: #0f172a;
+      border-radius: 20px;
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,0.08);
+      min-height: 120px;
       line-height: 1.8;
-      margin-bottom: 40px;
+      color: rgba(255,255,255,0.85);
     }
 
     footer {
-      padding: 40px 8%;
+      padding: 60px 10%;
       text-align: center;
-      color: #7a7a7a;
-      border-top: 1px solid rgba(255,255,255,0.06);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.5);
     }
 
-    @media (max-width: 768px) {
-      .hero h1 {
-        font-size: 4rem;
+    .floating {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(100px);
+      opacity: 0.4;
+    }
+
+    .one {
+      width: 300px;
+      height: 300px;
+      background: #8b5cf6;
+      top: 10%;
+      left: -100px;
+    }
+
+    .two {
+      width: 260px;
+      height: 260px;
+      background: #3b82f6;
+      bottom: 10%;
+      right: -100px;
+    }
+
+    @media(max-width:768px){
+      nav {
+        display:none;
       }
 
-      .section-title h2,
-      .discord h2 {
-        font-size: 2.5rem;
+      .hero p {
+        font-size: 1rem;
       }
 
-      .nav-links {
-        display: none;
+      .section-title h2 {
+        font-size: 2.2rem;
+      }
+
+      .generator {
+        padding: 24px;
       }
     }
   </style>
 </head>
 <body>
 
-  <nav class="navbar">
-    <div class="logo">RESONATE</div>
+<div class="bg"></div>
+<div class="grid"></div>
+<div class="floating one"></div>
+<div class="floating two"></div>
 
-    <div class="nav-links">
-      <a href="#home">Home</a>
-      <a href="#features">Features</a>
-      <a href="#store">Store</a>
-      <a href="#discord">Discord</a>
-    </div>
+<header>
+  <div class="logo">PromptForge AI</div>
+  <nav>
+    <a href="#features">Features</a>
+    <a href="#generator">AI Generator</a>
+    <a href="#pricing">Priser</a>
   </nav>
+</header>
 
-  <section class="hero" id="home">
-    <div class="hero-content">
-      <div class="tag">RESONATE ROLEPLAY</div>
-
-      <h1>
-        RESONATE
-        <span>STORE</span>
-      </h1>
-
-      <p>
-        Køb VIP, biler, starter packs og eksklusive rewards til Resonate RP.
-        Hurtig levering direkte til serveren.
-      </p>
-
-      <div class="hero-buttons">
-        <button class="btn btn-primary">Shop Nu</button>
-        <button class="btn btn-secondary">Join Discord</button>
-      </div>
-    </div>
-  </section>
-
-  <section id="features">
-    <div class="section-title">
-      <p>Hvorfor vælge os</p>
-      <h2>Premium Experience</h2>
-    </div>
-
-    <div class="features">
-      <div class="feature-card">
-        <h3>Instant Delivery</h3>
-        <p>
-          Alle køb leveres automatisk direkte in-game uden ventetid.
-        </p>
-      </div>
-
-      <div class="feature-card">
-        <h3>Sikker Betaling</h3>
-        <p>
-          Understøtter MobilePay, Stripe og kortbetaling med høj sikkerhed.
-        </p>
-      </div>
-
-      <div class="feature-card">
-        <h3>24/7 Support</h3>
-        <p>
-          Staff-teamet er klar til at hjælpe dig hele døgnet.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="products" id="store">
-    <div class="section-title">
-      <p>Store</p>
-      <h2>Featured Products</h2>
-    </div>
-
-    <div class="product-grid">
-      <div class="product-card">
-        <div class="product-image">CUSTOM CARS</div>
-
-        <div class="product-content">
-          <h3>Custom Cars</h3>
-          <div class="price">199 DKK</div>
-
-          <p>
-            Eksklusive biler med custom lyd, tuning og premium performance.
-          </p>
-
-          <button class="btn btn-primary">Køb Nu</button>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-image">GANG PACK</div>
-
-        <div class="product-content">
-          <h3>Gang Pack</h3>
-          <div class="price">249 DKK</div>
-
-          <p>
-            Opret din egen gang med base, outfits, biler og våben-access.
-          </p>
-
-          <button class="btn btn-primary">Køb Nu</button>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-image">COINS</div>
-
-        <div class="product-content">
-          <h3>Resonate Coins</h3>
-          <div class="price">29 DKK</div>
-
-          <p>
-            Køb coins og brug dem på biler, cosmetics og specielle rewards.
-          </p>
-
-          <button class="btn btn-primary">Køb Nu</button>
-        </div>
-      </div>
-      <div class="product-card">
-        <div class="product-image">VIP BRONZE</div>
-
-        <div class="product-content">
-          <h3>VIP Bronze</h3>
-          <div class="price">49 DKK</div>
-
-          <p>
-            Få adgang til eksklusive perks og hurtigere queue-prioritet.
-          </p>
-
-          <button class="btn btn-primary">Køb Nu</button>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-image">VIP PLATINUM</div>
-
-        <div class="product-content">
-          <h3>VIP Platinum</h3>
-          <div class="price">149 DKK</div>
-
-          <p>
-            Premium VIP med biler, rewards og adgang til særlige områder.
-          </p>
-
-          <button class="btn btn-primary">Køb Nu</button>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-image">STARTER PACK</div>
-
-        <div class="product-content">
-          <h3>Starter Pack</h3>
-          <div class="price">89 DKK</div>
-
-          <p>
-            Perfekt til nye spillere med penge, items og starter-køretøjer.
-          </p>
-
-          <button class="btn btn-primary">Køb Nu</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="discord" id="discord">
-    <h2>Join Resonate RP</h2>
-
+<section class="hero">
+  <div class="hero-content">
+    <div class="badge">🚀 Fremtidens AI Platform</div>
+    <h1>Byg virale idéer med <span>kun ét klik</span></h1>
     <p>
-      Bliv en del af communityet, få support og hold dig opdateret på events,
-      updates og giveaways.
+      PromptForge AI hjælper creators, YouTubere og virksomheder med at generere virale idéer, navne, hooks og content ved hjælp af kunstig intelligens.
     </p>
 
-    <button class="btn btn-primary" onclick="window.open('https://discord.gg/4t7Q6ZKTph')">
-      Join Discord
+    <div class="buttons">
+      <a href="#generator" class="btn btn-primary">Prøv AI Gratis</a>
+      <a href="#features" class="btn btn-secondary">Se Features</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="section-title">
+    <h2>Hvorfor folk elsker den</h2>
+    <p>
+      Designet til moderne creators der vil vokse hurtigt på TikTok, YouTube og sociale medier.
+    </p>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="icon">⚡</div>
+      <h3>Lynhurtig AI</h3>
+      <p>
+        Generér idéer, content og navne på sekunder med en elegant og hurtig brugeroplevelse.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="icon">🎯</div>
+      <h3>Virale Hooks</h3>
+      <p>
+        AI foreslår clickbait titler og hooks der øger visninger og engagement.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="icon">💰</div>
+      <h3>Tjen Penge</h3>
+      <p>
+        Tilføj reklamer, affiliate links eller premium abonnement og begynd at tjene online.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="generator">
+  <div class="section-title">
+    <h2>AI Idé Generator</h2>
+    <p>
+      Skriv hvad du vil lave content om, og få virale idéer genereret automatisk.
+    </p>
+  </div>
+
+  <div class="generator">
+    <textarea id="input" placeholder="Skriv fx: gaming, fitness, crypto, biler..."></textarea>
+
+    <button class="btn btn-primary" onclick="generateIdeas()">
+      Generér AI Idéer
     </button>
-  </section>
 
-  <footer>
-    © 2026 Resonate Roleplay — All Rights Reserved.
-  </footer>
+    <div class="output" id="output">
+      Dine AI-idéer vises her...
+    </div>
+  </div>
+</section>
 
-  <script>
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
+<section class="section" id="pricing">
+  <div class="section-title">
+    <h2>Simple Priser</h2>
+    <p>
+      Start gratis og opgrader senere til premium features.
+    </p>
+  </div>
 
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-          behavior: 'smooth'
-        });
-      });
-    });
-  </script>
+  <div class="cards">
+    <div class="card">
+      <div class="icon">🆓</div>
+      <h3>Gratis</h3>
+      <p>
+        5 AI generations om dagen.<br><br>
+        Perfekt til at teste platformen.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="icon">🔥</div>
+      <h3>Pro</h3>
+      <p>
+        Ubegrænset AI generations.<br><br>
+        Premium prompts og hurtigere resultater.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2026 PromptForge AI — Bygget med HTML, CSS & JavaScript
+</footer>
+
+<script>
+  const ideas = [
+    "10 TikTok idéer ingen bruger endnu 🔥",
+    "Sådan tjente jeg penge med AI på 24 timer",
+    "Den sygeste gaming setup under 5000 kr",
+    "3 AI tools der erstatter dit arbejde",
+    "De mest virale YouTube thumbnails lige nu",
+    "Hvordan creators går viralt i 2026",
+    "Top 5 side hustles med AI",
+    "Sådan får du 100k views hurtigt",
+    "AI prompts der føles ulovlige 🤯",
+    "Websites der tjener penge mens du sover"
+  ];
+
+  function generateIdeas() {
+    const input = document.getElementById('input').value;
+    const output = document.getElementById('output');
+
+    if(input.trim() === '') {
+      output.innerHTML = 'Skriv et emne først...';
+      return;
+    }
+
+    let shuffled = ideas.sort(() => 0.5 - Math.random());
+    let selected = shuffled.slice(0, 5);
+
+    output.innerHTML = `
+      <strong>AI-resultater for:</strong> ${input}<br><br>
+      ${selected.map((idea, index) => `${index + 1}. ${idea}`).join('<br><br>')}
+    `;
+  }
+</script>
 
 </body>
 </html>
