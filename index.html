@@ -4,33 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stock Empire X</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 
   <style>
-
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial,sans-serif;
-    }
+    *{margin:0;padding:0;box-sizing:border-box}
 
     body{
-      background:#0f172a;
+      font-family:'Orbitron',sans-serif;
+      background:#020617;
       color:white;
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    .bg{
+      position:fixed;
+      width:700px;
+      height:700px;
+      background:rgba(0,255,170,0.08);
+      border-radius:50%;
+      filter:blur(100px);
+      top:-200px;
+      right:-200px;
+    }
+
+    .container{
+      position:relative;
+      z-index:2;
       padding:30px;
+      max-width:1600px;
+      margin:auto;
     }
 
     h1{
       text-align:center;
+      font-size:5rem;
       margin-bottom:10px;
-      font-size:4rem;
-      color:#00ff88;
+      background:linear-gradient(90deg,#00f5ff,#00ff88,#ffe600);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
     }
 
     .subtitle{
       text-align:center;
       color:#94a3b8;
       margin-bottom:40px;
+      font-size:1.2rem;
     }
 
     .stats{
@@ -41,27 +60,40 @@
     }
 
     .card{
-      background:#1e293b;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:25px;
       padding:25px;
-      border-radius:20px;
+      backdrop-filter:blur(10px);
+    }
+
+    .label{
+      color:#94a3b8;
+      margin-bottom:10px;
     }
 
     .number{
-      font-size:2rem;
-      margin-top:10px;
+      font-size:2.2rem;
       font-weight:bold;
     }
 
     .stocks{
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+      grid-template-columns:repeat(auto-fit,minmax(330px,1fr));
       gap:25px;
     }
 
     .stock{
-      background:#1e293b;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:25px;
       padding:25px;
-      border-radius:20px;
+      transition:0.3s;
+    }
+
+    .stock:hover{
+      transform:translateY(-8px);
+      box-shadow:0 20px 40px rgba(0,255,170,0.15);
     }
 
     .top{
@@ -72,26 +104,21 @@
     }
 
     .name{
-      font-size:1.7rem;
+      font-size:1.8rem;
       font-weight:bold;
     }
 
     .price{
       font-size:2rem;
-      margin-bottom:15px;
+      margin-bottom:10px;
     }
 
-    .green{
-      color:#00ff88;
-    }
-
-    .red{
-      color:#ff4d6d;
-    }
+    .green{color:#00ff88}
+    .red{color:#ff4d6d}
 
     .owned{
-      margin:15px 0;
       color:#94a3b8;
+      margin:15px 0;
     }
 
     .controls{
@@ -102,37 +129,48 @@
 
     input{
       width:90px;
-      padding:10px;
+      padding:12px;
       border:none;
-      border-radius:10px;
-      background:#0f172a;
+      border-radius:12px;
+      background:#111827;
       color:white;
       text-align:center;
+      font-weight:bold;
     }
 
     button{
       flex:1;
       border:none;
-      border-radius:10px;
-      cursor:pointer;
+      border-radius:12px;
       font-weight:bold;
+      cursor:pointer;
+      transition:0.2s;
+    }
+
+    button:hover{
+      transform:scale(1.05)
     }
 
     .buy{
-      background:#00ff88;
+      background:linear-gradient(90deg,#00ff88,#00d4ff);
       color:black;
     }
 
     .sell{
-      background:#ff4d6d;
+      background:linear-gradient(90deg,#ff4d6d,#ff8a00);
       color:white;
     }
 
-    #news{
+    svg{
+      margin-top:10px;
+    }
+
+    .news{
       margin-top:40px;
-      background:#1e293b;
-      padding:20px;
-      border-radius:20px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:25px;
+      padding:25px;
       text-align:center;
       color:#ffe600;
       font-size:1.1rem;
@@ -140,74 +178,115 @@
 
     table{
       width:100%;
-      margin-top:40px;
+      margin-top:25px;
       border-collapse:collapse;
-      background:#1e293b;
+      background:rgba(255,255,255,0.05);
       border-radius:20px;
       overflow:hidden;
     }
 
     th,td{
-      padding:15px;
+      padding:18px;
       text-align:center;
     }
 
     th{
-      background:#334155;
+      background:rgba(255,255,255,0.08);
+      color:#00ffcc;
     }
 
-    #achievement{
+    .achievement{
+      margin-top:30px;
       text-align:center;
       font-size:2rem;
       color:gold;
-      margin-top:30px;
       font-weight:bold;
     }
-
   </style>
 </head>
-
 <body>
 
-<h1>📈 STOCK EMPIRE X</h1>
+<div class="bg"></div>
 
-<p class="subtitle">
-  Køb aktier • Bliv rig • Følg markedet live
-</p>
+<div class="container">
+
+<div style="display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:30px;">
+
+<div>
+  <h1>📈 STOCK EMPIRE X</h1>
+  <p class="subtitle">
+    Køb aktier • Bliv rig • Byg dit firma
+  </p>
+</div>
+
+<div class="card" style="display:flex;align-items:center;gap:15px;max-width:400px;">
+
+  <img
+    id="profileImage"
+    src="https://i.imgur.com/6VBx3io.png"
+    style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #00ff88;"
+  >
+
+  <div>
+    <div style="font-size:1.3rem;font-weight:bold;" id="playerName">
+      Investor
+    </div>
+
+    <div style="color:#94a3b8;margin-top:5px;">
+      Firma Værdi
+    </div>
+
+    <div style="font-size:1.5rem;color:#00ff88;font-weight:bold;" id="companyValue">
+      100000 kr
+    </div>
+  </div>
+
+</div>
+
+</div>
+
+<div class="card" style="margin-bottom:30px;">
+
+  <h2 style="margin-bottom:20px;">👤 Lav din profil</h2>
+
+  <div style="display:flex;gap:15px;flex-wrap:wrap;">
+
+    <input type="text" id="nameInput" placeholder="Dit navn" style="flex:1;min-width:200px;">
+
+    <input type="text" id="imageInput" placeholder="Billede URL" style="flex:1;min-width:250px;">
+
+    <button class="buy" onclick="saveProfile()" style="padding:15px;max-width:180px;">
+      Gem Profil
+    </button>
+
+  </div>
+
+</div>
 
 <div class="stats">
-
   <div class="card">
-    <div>💰 Penge</div>
-    <div class="number" id="money">
-      100000 kr
-    </div>
+    <div class="label">💰 Kontanter</div>
+    <div class="number" id="money">100000 kr</div>
   </div>
 
   <div class="card">
-    <div>📊 Portfolio</div>
-    <div class="number green" id="portfolio">
-      0 kr
-    </div>
+    <div class="label">📊 Aktie værdi</div>
+    <div class="number green" id="portfolio">0 kr</div>
   </div>
 
   <div class="card">
-    <div>🏦 Total Formue</div>
-    <div class="number" id="worth">
-      100000 kr
-    </div>
+    <div class="label">🏦 Total formue</div>
+    <div class="number" id="worth">100000 kr</div>
   </div>
-
 </div>
 
 <div class="stocks" id="stocks"></div>
 
-<div id="news">
-  🚀 Markedet åbner stærkt i dag!
-</div>
+<div class="news" id="news">🚀 Markedet er grønt i dag!</div>
+
+<h2 style="margin-top:50px">📁 Din Portfolio</h2>
 
 <table>
-
   <thead>
     <tr>
       <th>Aktie</th>
@@ -216,62 +295,95 @@
       <th>Værdi</th>
     </tr>
   </thead>
-
   <tbody id="table"></tbody>
-
 </table>
 
-<div id="achievement"></div>
+<div class="achievement" id="achievement"></div>
+
+</div>
 
 <script>
 
 let money = 100000;
 
 const newsList = [
-
   '🚀 Tesla stiger efter nye AI biler!',
   '📉 Apple falder efter dårlige salgstal!',
   '🔥 NVIDIA eksploderer i gaming markedet!',
   '💰 Microsoft investerer milliarder i AI!',
-  '⚡ Amazon vokser hurtigt!',
+  '⚡ Amazon vokser hurtigt i dag!',
   '📈 Hele markedet går op!'
-
 ];
 
 const stocks = [
 
   {
-    name:'Tesla',
-    symbol:'TSLA',
-    price:1200,
+    name:'Amazon',
+    symbol:'AMZN',
+    price:1300,
     owned:0,
-    history:[1200]
+    history:[1300]
   },
 
   {
-    name:'Apple',
-    symbol:'AAPL',
-    price:900,
+    name:'Meta',
+    symbol:'META',
+    price:1100,
     owned:0,
-    history:[900]
+    history:[1100]
   },
 
   {
-    name:'NVIDIA',
-    symbol:'NVDA',
-    price:1500,
+    name:'Netflix',
+    symbol:'NFLX',
+    price:1000,
     owned:0,
-    history:[1500]
+    history:[1000]
   },
 
   {
-    name:'Microsoft',
-    symbol:'MSFT',
-    price:800,
+    name:'Google',
+    symbol:'GOOGL',
+    price:1400,
     owned:0,
-    history:[800]
-  }
+    history:[1400]
+  },
 
+  {
+    name:'Samsung',
+    symbol:'SMSN',
+    price:700,
+    owned:0,
+    history:[700]
+  },
+
+  {
+    name:'Sony',
+    symbol:'SONY',
+    price:650,
+    owned:0,
+    history:[650]
+  },
+
+  {
+    name:'Bitcoin Corp',
+    symbol:'BTCX',
+    price:2000,
+    owned:0,
+    history:[2000]
+  },
+
+  {
+    name:'SpaceX',
+    symbol:'SPCX',
+    price:2500,
+    owned:0,
+    history:[2500]
+  },
+  {name:'Tesla',symbol:'TSLA',price:1200,owned:0,history:[1200]},
+  {name:'Apple',symbol:'AAPL',price:900,owned:0,history:[900]},
+  {name:'NVIDIA',symbol:'NVDA',price:1500,owned:0,history:[1500]},
+  {name:'Microsoft',symbol:'MSFT',price:800,owned:0,history:[800]}
 ];
 
 const stocksDiv = document.getElementById('stocks');
@@ -279,16 +391,11 @@ const stocksDiv = document.getElementById('stocks');
 function graph(history){
 
   const max = Math.max(...history);
-
   const min = Math.min(...history);
 
   return history.map((p,i)=>{
-
-    const y =
-      60 - ((p-min)/(max-min || 1))*50;
-
+    const y = 60 - ((p-min)/(max-min || 1))*50;
     return `${i*20},${y}`;
-
   }).join(' ');
 }
 
@@ -298,114 +405,13 @@ function render(){
 
   stocks.forEach((stock,index)=>{
 
-    const previous =
-      stock.history[stock.history.length-2]
-      || stock.price;
+    const oldPrice = stock.price;
 
-    const up = stock.price >= previous;
-
-    const change =
-      (((stock.price-previous)/previous)*100)
-      .toFixed(2);
-
-    const div = document.createElement('div');
-
-    div.className='stock';
-
-    div.innerHTML=`
-
-      <div class="top">
-
-        <div>
-
-          <div class="name">
-            ${stock.name}
-          </div>
-
-          <div style="color:#94a3b8">
-            ${stock.symbol}
-          </div>
-
-        </div>
-
-        <div class="${up ? 'green':'red'}">
-
-          ${up ? '▲':'▼'}
-          ${Math.abs(change)}%
-
-        </div>
-
-      </div>
-
-      <div class="price ${up ? 'green':'red'}">
-
-        ${stock.price} kr
-
-      </div>
-
-      <svg width="100%" height="70">
-
-        <polyline
-          fill="none"
-          stroke="${up ? '#00ff88':'#ff4d6d'}"
-          stroke-width="4"
-          points="${graph(stock.history)}"
-        />
-
-      </svg>
-
-      <div class="owned">
-
-        Du ejer ${stock.owned} aktier
-
-      </div>
-
-      <div class="controls">
-
-        <input
-          type="number"
-          value="1"
-          min="1"
-          id="amount-${index}"
-        >
-
-        <button
-          class="buy"
-          onclick="buy(${index})"
-        >
-          Køb
-        </button>
-
-        <button
-          class="sell"
-          onclick="sell(${index})"
-        >
-          Sælg
-        </button>
-
-      </div>
-
-    `;
-
-    stocksDiv.appendChild(div);
-
-  });
-
-  updatePortfolio();
-}
-
-function updateMarket(){
-
-  stocks.forEach(stock=>{
-
-    const move =
-      (Math.random()*10-5);
+    const move = (Math.random()*10-5);
 
     stock.price += move*5;
 
-    if(stock.price < 100){
-      stock.price = 100;
-    }
+    if(stock.price < 100) stock.price = 100;
 
     stock.price = Math.floor(stock.price);
 
@@ -415,24 +421,60 @@ function updateMarket(){
       stock.history.shift();
     }
 
+    const up = stock.price >= oldPrice;
+
+    const div = document.createElement('div');
+    div.className='stock';
+
+    div.innerHTML=`
+
+      <div class="top">
+        <div>
+          <div class="name">${stock.name}</div>
+          <div style="color:#94a3b8">${stock.symbol}</div>
+        </div>
+
+        <div class="${up ? 'green':'red'}" style="font-size:1.2rem;font-weight:bold">
+          ${up ? '▲':'▼'} ${Math.abs(move).toFixed(2)}%
+        </div>
+      </div>
+
+      <div class="price ${up ? 'green':'red'}">
+        ${stock.price} kr
+      </div>
+
+      <svg width="100%" height="70">
+        <polyline
+          fill="none"
+          stroke="${up ? '#00ff88':'#ff4d6d'}"
+          stroke-width="4"
+          points="${graph(stock.history)}"
+        />
+      </svg>
+
+      <div class="owned">Du ejer ${stock.owned} aktier</div>
+
+      <div class="controls">
+        <input type="number" value="1" min="1" id="amount-${index}">
+
+        <button class="buy" onclick="buy(${index})">Køb</button>
+
+        <button class="sell" onclick="sell(${index})">Sælg</button>
+      </div>
+
+    `;
+
+    stocksDiv.appendChild(div);
   });
 
-  const randomNews =
-    newsList[Math.floor(Math.random()*newsList.length)];
-
-  document.getElementById('news').textContent =
-    randomNews;
-
-  render();
+  updatePortfolio();
 }
 
 function buy(index){
 
-  const amount =
-    Number(document.getElementById(`amount-${index}`).value);
+  const amount = Number(document.getElementById(`amount-${index}`).value);
 
-  const cost =
-    amount * stocks[index].price;
+  const cost = amount * stocks[index].price;
 
   if(money >= cost){
 
@@ -445,14 +487,12 @@ function buy(index){
   } else {
 
     alert('❌ Ikke nok penge');
-
   }
 }
 
 function sell(index){
 
-  const amount =
-    Number(document.getElementById(`amount-${index}`).value);
+  const amount = Number(document.getElementById(`amount-${index}`).value);
 
   if(stocks[index].owned >= amount){
 
@@ -465,96 +505,85 @@ function sell(index){
   } else {
 
     alert('❌ Du ejer ikke så mange');
-
   }
 }
 
-function updatePortfolio(){
+function saveProfile(){
+
+  const name = document.getElementById('nameInput').value;
+  const image = document.getElementById('imageInput').value;
+
+  if(name){
+    document.getElementById('playerName').textContent = name;
+  }
+
+  if(image){
+    document.getElementById('profileImage').src = image;
+  }
+
+}
+
+function updatePortfolio(){ 
 
   let portfolio = 0;
 
-  const table =
-    document.getElementById('table');
+  const table = document.getElementById('table');
 
   table.innerHTML='';
 
   stocks.forEach(stock=>{
 
-    const total =
-      stock.price * stock.owned;
+    const total = stock.price * stock.owned;
 
     portfolio += total;
 
     if(stock.owned > 0){
 
-      const row =
-        document.createElement('tr');
+      const row = document.createElement('tr');
 
       row.innerHTML=`
-
         <td>${stock.name}</td>
         <td>${stock.owned}</td>
         <td>${stock.price} kr</td>
         <td>${Math.floor(total)} kr</td>
-
       `;
 
       table.appendChild(row);
     }
-
   });
 
-  const worth =
-    money + portfolio;
+  const worth = money + portfolio;
 
-  document.getElementById('money').textContent =
-    Math.floor(money)+' kr';
-
-  document.getElementById('portfolio').textContent =
-    Math.floor(portfolio)+' kr';
-
+  document.getElementById('money').textContent = Math.floor(money)+' kr';
+  document.getElementById('portfolio').textContent = Math.floor(portfolio)+' kr';
   document.getElementById('worth').textContent =
     Math.floor(worth)+' kr';
 
-  const achievement =
-    document.getElementById('achievement');
+  document.getElementById('companyValue').textContent =
+    Math.floor(worth)+' kr';
+
+  const achievement = document.getElementById('achievement');
 
   if(worth >= 250000){
-
-    achievement.textContent =
-      '🔥 AKTIE KONGE 🔥';
-
+    achievement.textContent='🔥 AKTIE KONGE 🔥';
   } else if(worth >= 150000){
-
-    achievement.textContent =
-      '🚀 Du bliver hurtigt rig!';
-
+    achievement.textContent='🚀 Du bliver hurtigt rig!';
   } else {
-
-    achievement.textContent = '';
-
+    achievement.textContent='';
   }
-
 }
 
+setInterval(()=>{
+
+  render();
+
+  const randomNews = newsList[Math.floor(Math.random()*newsList.length)];
+
+  document.getElementById('news').textContent = randomNews;
+
+},3000);
+
 render();
-
-updatePortfolio();
-
-updateMarket();
-
-/*
-
-ÆNDRER AKTIER HVER TIME
-
-3600000 = 1 time
-
-TEST:
-brug 60000 for 1 minut
-
-*/
-
-setInterval(updateMarket,3600000);
 
 </script>
 
