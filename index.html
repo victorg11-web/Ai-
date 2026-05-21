@@ -2,702 +2,192 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Stock Empire X</title>
-
+<title>Slope PRO</title>
 <style>
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial;
-}
-
-body{
-  background:#0f172a;
-  color:white;
-  padding:30px;
-}
-
-h1{
-  text-align:center;
-  font-size:4rem;
-  color:#00ff88;
-  margin-bottom:10px;
-}
-
-.subtitle{
-  text-align:center;
-  color:#94a3b8;
-  margin-bottom:40px;
-}
-
-.profile{
-  background:#1e293b;
-  padding:25px;
-  border-radius:20px;
-  display:flex;
-  gap:20px;
-  align-items:center;
-  margin-bottom:40px;
-  flex-wrap:wrap;
-}
-
-.profile img{
-  width:100px;
-  height:100px;
-  border-radius:50%;
-  object-fit:cover;
-  border:4px solid #00ff88;
-}
-
-.profile-info{
-  flex:1;
-}
-
-.profile-info h2{
-  margin-bottom:10px;
-}
-
-.profile input{
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  background:#0f172a;
-  color:white;
-  width:100%;
-  margin-top:10px;
-}
-
-.profile button{
-  margin-top:10px;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  background:#00ff88;
-  color:black;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:20px;
-  margin-bottom:40px;
-}
-
-.card{
-  background:#1e293b;
-  padding:25px;
-  border-radius:20px;
-}
-
-.number{
-  font-size:2rem;
-  margin-top:10px;
-  font-weight:bold;
-}
-
-.green{
-  color:#00ff88;
-}
-
-.red{
-  color:#ff4d6d;
-}
-
-.stocks{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-  gap:25px;
-}
-
-.stock{
-  background:#1e293b;
-  padding:25px;
-  border-radius:20px;
-}
-
-.top{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:20px;
-}
-
-.name{
-  font-size:1.7rem;
-  font-weight:bold;
-}
-
-.price{
-  font-size:2rem;
-  margin-bottom:10px;
-}
-
-.controls{
-  display:flex;
-  gap:10px;
-  margin-top:15px;
-}
-
-.controls input{
-  width:90px;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#0f172a;
-  color:white;
-  text-align:center;
-}
-
-.controls button{
-  flex:1;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.buy{
-  background:#00ff88;
-  color:black;
-}
-
-.sell{
-  background:#ff4d6d;
-  color:white;
-}
-
-#news{
-  margin-top:40px;
-  background:#1e293b;
-  padding:20px;
-  border-radius:20px;
-  text-align:center;
-  color:#ffe600;
-  font-size:1.1rem;
-}
-
-table{
-  width:100%;
-  margin-top:40px;
-  border-collapse:collapse;
-  background:#1e293b;
-  border-radius:20px;
-  overflow:hidden;
-}
-
-th,td{
-  padding:15px;
-  text-align:center;
-}
-
-th{
-  background:#334155;
-}
-
-#achievement{
-  margin-top:30px;
-  text-align:center;
-  font-size:2rem;
-  color:gold;
-  font-weight:bold;
-}
-
+  body { margin: 0; overflow: hidden; background: black; }
+  #ui {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    color: #00ffcc;
+    font-family: Arial;
+  }
 </style>
 </head>
-
 <body>
 
-<h1>📈 STOCK EMPIRE X</h1>
-
-<p class="subtitle">
-Byg dit firma • Køb aktier • Bliv milliardær
-</p>
-
-<div class="profile">
-
-<img
-id="profileImage"
-src="https://i.imgur.com/6VBx3io.png"
->
-
-<div class="profile-info">
-
-<h2 id="playerName">
-Investor
-</h2>
-
-<p>
-🏢 Firma Værdi:
-<span id="companyValue">
-100000 kr
-</span>
-</p>
-
-<input
-type="text"
-id="nameInput"
-placeholder="Dit navn"
->
-
-<input
-type="text"
-id="imageInput"
-placeholder="Profil billede URL"
->
-
-<button onclick="saveProfile()">
-Gem Profil
-</button>
-
+<div id="ui">
+  Score: <span id="score">0</span><br>
+  Highscore: <span id="highscore">0</span>
 </div>
 
-</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
 
-<div class="stats">
-
-<div class="card">
-💰 Penge
-<div class="number" id="money">
-100000 kr
-</div>
-</div>
-
-<div class="card">
-📊 Portfolio
-<div class="number green" id="portfolio">
-0 kr
-</div>
-</div>
-
-<div class="card">
-🏦 Total Formue
-<div class="number" id="worth">
-100000 kr
-</div>
-</div>
-
-</div>
-
-<div class="stocks" id="stocks"></div>
-
-<div id="news">
-🚀 Markedet åbner stærkt i dag!
-</div>
-
-<table>
-
-<thead>
-<tr>
-<th>Aktie</th>
-<th>Antal</th>
-<th>Pris</th>
-<th>Værdi</th>
-</tr>
-</thead>
-
-<tbody id="table"></tbody>
-
-</table>
-
-<div id="achievement"></div>
+<!-- POSTPROCESS (GLOW) -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.152/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152/examples/js/postprocessing/UnrealBloomPass.js"></script>
 
 <script>
+// SCENE
+const scene = new THREE.Scene();
 
-let money = 100000;
+// CAMERA
+const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
 
-const newsList = [
+// RENDER
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
 
-'🚀 Tesla stiger!',
-'📉 Apple falder!',
-'🔥 NVIDIA eksploderer!',
-'💰 Amazon vokser!',
-'⚡ Microsoft investerer i AI!',
-'📈 Markedet går grønt!'
+// BLOOM (REAL GLOW)
+const composer = new THREE.EffectComposer(renderer);
+composer.addPass(new THREE.RenderPass(scene, camera));
 
-];
+const bloom = new THREE.UnrealBloomPass(
+  new THREE.Vector2(innerWidth, innerHeight),
+  1.5, // strength
+  0.4, // radius
+  0.2  // threshold
+);
+composer.addPass(bloom);
 
-const stocks = [
+// LIGHT
+const light = new THREE.PointLight(0x00ffcc, 2, 100);
+scene.add(light);
 
-{
-name:'Tesla',
-symbol:'TSLA',
-price:1200,
-owned:0,
-history:[1200]
-},
+// BALL (SMOOTH PHYSICS)
+const ball = new THREE.Mesh(
+  new THREE.SphereGeometry(0.5, 32, 32),
+  new THREE.MeshStandardMaterial({
+    color: 0x00ff88,
+    emissive: 0x00ff88,
+    emissiveIntensity: 2
+  })
+);
+scene.add(ball);
 
-{
-name:'Apple',
-symbol:'AAPL',
-price:900,
-owned:0,
-history:[900]
-},
+let velocityX = 0;
+let velocityZ = 0.4;
 
-{
-name:'NVIDIA',
-symbol:'NVDA',
-price:1500,
-owned:0,
-history:[1500]
-},
+// PLATFORMS
+let objects = [];
 
-{
-name:'Microsoft',
-symbol:'MSFT',
-price:800,
-owned:0,
-history:[800]
-},
+function createPlatform(z) {
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(5, 0.5, 10),
+    new THREE.MeshStandardMaterial({
+      color: 0x0088ff,
+      emissive: 0x0044ff,
+      emissiveIntensity: 1
+    })
+  );
 
-{
-name:'Amazon',
-symbol:'AMZN',
-price:1400,
-owned:0,
-history:[1400]
-},
+  mesh.position.z = z;
+  mesh.position.x = (Math.random() - 0.5) * 4;
+  mesh.rotation.z = (Math.random() - 0.5) * 0.5;
 
-{
-name:'Meta',
-symbol:'META',
-price:1000,
-owned:0,
-history:[1000]
-},
+  scene.add(mesh);
+  objects.push(mesh);
 
-{
-name:'Google',
-symbol:'GOOGL',
-price:1600,
-owned:0,
-history:[1600]
-},
-
-{
-name:'Netflix',
-symbol:'NFLX',
-price:1100,
-owned:0,
-history:[1100]
+  // obstacle
+  if (Math.random() < 0.3) {
+    const o = new THREE.Mesh(
+      new THREE.BoxGeometry(1,1,1),
+      new THREE.MeshStandardMaterial({
+        color: 0xff0000,
+        emissive: 0xff0000,
+        emissiveIntensity: 3
+      })
+    );
+    o.position.copy(mesh.position);
+    o.position.y = 1;
+    o.userData.obstacle = true;
+    scene.add(o);
+    objects.push(o);
+  }
 }
 
-];
+// INIT WORLD
+for (let i = 0; i < 20; i++) createPlatform(-i * 10);
 
-const stocksDiv =
-document.getElementById('stocks');
+// CONTROLS (KEYBOARD)
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") velocityX = -0.15;
+  if (e.key === "ArrowRight") velocityX = 0.15;
+});
+document.addEventListener("keyup", () => velocityX *= 0.5);
 
-function saveProfile(){
-
-const name =
-document.getElementById('nameInput').value;
-
-const image =
-document.getElementById('imageInput').value;
-
-if(name){
-document.getElementById('playerName').textContent =
-name;
-}
-
-if(image){
-document.getElementById('profileImage').src =
-image;
-}
-
-}
-
-function graph(history){
-
-const max = Math.max(...history);
-
-const min = Math.min(...history);
-
-return history.map((p,i)=>{
-
-const y =
-60 - ((p-min)/(max-min || 1))*50;
-
-return `${i*20},${y}`;
-
-}).join(' ');
-}
-
-function render(){
-
-stocksDiv.innerHTML='';
-
-stocks.forEach((stock,index)=>{
-
-const previous =
-stock.history[stock.history.length-2]
-|| stock.price;
-
-const up =
-stock.price >= previous;
-
-const change =
-(((stock.price-previous)/previous)*100)
-.toFixed(2);
-
-const div =
-document.createElement('div');
-
-div.className='stock';
-
-div.innerHTML=`
-
-<div class="top">
-
-<div>
-
-<div class="name">
-${stock.name}
-</div>
-
-<div style="color:#94a3b8">
-${stock.symbol}
-</div>
-
-</div>
-
-<div class="${up ? 'green':'red'}">
-
-${up ? '▲':'▼'}
-${Math.abs(change)}%
-
-</div>
-
-</div>
-
-<div class="price ${up ? 'green':'red'}">
-
-${stock.price} kr
-
-</div>
-
-<svg width="100%" height="70">
-
-<polyline
-fill="none"
-stroke="${up ? '#00ff88':'#ff4d6d'}"
-stroke-width="4"
-points="${graph(stock.history)}"
-/>
-
-</svg>
-
-<div style="margin-top:10px;color:#94a3b8">
-
-Du ejer ${stock.owned} aktier
-
-</div>
-
-<div class="controls">
-
-<input
-type="number"
-value="1"
-min="1"
-id="amount-${index}"
->
-
-<button
-class="buy"
-onclick="buy(${index})"
->
-Køb
-</button>
-
-<button
-class="sell"
-onclick="sell(${index})"
->
-Sælg
-</button>
-
-</div>
-
-`;
-
-stocksDiv.appendChild(div);
-
+// MOBILE TOUCH
+document.addEventListener("touchmove", e => {
+  let x = e.touches[0].clientX / innerWidth;
+  velocityX = (x - 0.5) * 0.3;
 });
 
-updatePortfolio();
+// SOUND (BACKGROUND)
+const audio = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_115b9bcecc.mp3");
+audio.loop = true;
+audio.volume = 0.3;
+document.body.addEventListener("click", () => audio.play(), { once: true });
 
+// SCORE + HIGHSCORE
+let score = 0;
+let highscore = localStorage.getItem("slopeHigh") || 0;
+document.getElementById("highscore").innerText = highscore;
+
+// LOOP
+function animate() {
+  requestAnimationFrame(animate);
+
+  // PHYSICS
+  velocityX *= 0.95; // friction
+  velocityZ += 0.0008;
+
+  ball.position.x += velocityX;
+  ball.position.z -= velocityZ;
+
+  // CAMERA FOLLOW
+  camera.position.set(
+    ball.position.x,
+    ball.position.y + 3,
+    ball.position.z + 6
+  );
+  camera.lookAt(ball.position);
+
+  light.position.copy(ball.position);
+
+  // COLLISION
+  objects.forEach(o => {
+    if (o.userData.obstacle) {
+      if (ball.position.distanceTo(o.position) < 1) {
+        gameOver();
+      }
+    }
+  });
+
+  // GENERATE WORLD
+  if (objects.length && objects[0].position.z > ball.position.z + 20) {
+    scene.remove(objects[0]);
+    objects.shift();
+    createPlatform(ball.position.z - 200);
+  }
+
+  // SCORE
+  score++;
+  document.getElementById("score").innerText = score;
+
+  composer.render();
 }
 
-function updateMarket(){
-
-stocks.forEach(stock=>{
-
-const move =
-Math.floor(Math.random()*200-100);
-
-stock.price += move;
-
-if(stock.price < 100){
-stock.price = 100;
+function gameOver() {
+  if (score > highscore) {
+    localStorage.setItem("slopeHigh", score);
+  }
+  alert("Game Over! Score: " + score);
+  location.reload();
 }
 
-stock.history.push(stock.price);
-
-if(stock.history.length > 10){
-stock.history.shift();
-}
-
-});
-
-const randomNews =
-newsList[Math.floor(Math.random()*newsList.length)];
-
-document.getElementById('news').textContent =
-randomNews;
-
-render();
-
-}
-
-function buy(index){
-
-const amount =
-Number(document.getElementById(`amount-${index}`).value);
-
-const cost =
-amount * stocks[index].price;
-
-if(money >= cost){
-
-money -= cost;
-
-stocks[index].owned += amount;
-
-render();
-
-}else{
-
-alert('❌ Ikke nok penge');
-
-}
-
-}
-
-function sell(index){
-
-const amount =
-Number(document.getElementById(`amount-${index}`).value);
-
-if(stocks[index].owned >= amount){
-
-stocks[index].owned -= amount;
-
-money += amount * stocks[index].price;
-
-render();
-
-}else{
-
-alert('❌ Du ejer ikke så mange');
-
-}
-
-}
-
-function updatePortfolio(){
-
-let portfolio = 0;
-
-const table =
-document.getElementById('table');
-
-table.innerHTML='';
-
-stocks.forEach(stock=>{
-
-const total =
-stock.price * stock.owned;
-
-portfolio += total;
-
-if(stock.owned > 0){
-
-const row =
-document.createElement('tr');
-
-row.innerHTML=`
-
-<td>${stock.name}</td>
-<td>${stock.owned}</td>
-<td>${stock.price} kr</td>
-<td>${Math.floor(total)} kr</td>
-
-`;
-
-table.appendChild(row);
-
-}
-
-});
-
-const worth =
-money + portfolio;
-
-document.getElementById('money').textContent =
-Math.floor(money)+' kr';
-
-document.getElementById('portfolio').textContent =
-Math.floor(portfolio)+' kr';
-
-document.getElementById('worth').textContent =
-Math.floor(worth)+' kr';
-
-document.getElementById('companyValue').textContent =
-Math.floor(worth)+' kr';
-
-const achievement =
-document.getElementById('achievement');
-
-if(worth >= 1000000){
-
-achievement.textContent =
-'👑 DU ER BLEVET MILLIARDÆR 👑';
-
-}else if(worth >= 250000){
-
-achievement.textContent =
-'🔥 AKTIE KONGE 🔥';
-
-}else{
-
-achievement.textContent = '';
-
-}
-
-}
-
-render();
-
-updatePortfolio();
-
-/*
-
-AKTIER ÆNDRER SIG HVER TIME
-
-3600000 = 1 time
-
-TEST:
-brug 10000 for 10 sekunder
-
-*/
-
-setInterval(updateMarket,3600000);
-
+animate();
 </script>
 
 </body>
